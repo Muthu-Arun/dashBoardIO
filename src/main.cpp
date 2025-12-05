@@ -26,7 +26,7 @@ int main(int, char**)
     // 2. Setup Dear ImGui context
     // IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGuiIO& io = ImGui::GetIO(); // (void)io;
     
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
@@ -52,7 +52,7 @@ int main(int, char**)
         ImGui::End();
 
         // Show the built-in demo window (useful for learning)
-        ImGui::ShowDemoWindow();
+        // ImGui::ShowDemoWindow();
 
         // Rendering
         ImGui::Render();

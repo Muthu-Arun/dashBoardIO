@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 23)
 # 1. Find system dependencies (GLFW and OpenGL)
 find_package(glfw3 REQUIRED)
 find_package(OpenGL REQUIRED)
-
+find_package(Drogon REQUIRED)
 # 2. Define ImGui Sources
 # We need the core files AND the specific backends for GLFW and OpenGL3
 set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/imgui)
@@ -20,7 +20,8 @@ set(IMGUI_SOURCES
     ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
     ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
 )
-
+set(HTTP_SOURCES
+    src/http/poll.cpp)
 # 3. Create the Executable
 add_executable(app src/main.cpp ${IMGUI_SOURCES})
 
@@ -32,4 +33,4 @@ target_include_directories(app PUBLIC
 )
 
 # 5. Link Libraries
-target_link_libraries(app PRIVATE glfw OpenGL::GL)
+target_link_libraries(app PRIVATE glfw OpenGL::GL Drogon::Drogon pthread)
