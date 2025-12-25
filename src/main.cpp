@@ -2,16 +2,19 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include <GLFW/glfw3.h>
+#include <mutex>
 #include <stdio.h>
-
+#include <utility>
+#include "poll.h"
 int main(int, char**)
 {
     // 1. Setup GLFW
-    
+    HttpPoll::init();    
     if (!glfwInit())
         return 1;
 
     // Decide GL+GLSL versions
+    std::string text;
     const char* glsl_version = "#version 130";
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
@@ -49,6 +52,13 @@ int main(int, char**)
         ImGui::Begin("Hello, Linux!");
         ImGui::Text("This is running with CMake and GLFW.");
         ImGui::Text("Enjoy using Dear ImGui on Linux!");
+        ImGui::Text("%s", text.c_str());
+        if(HttpPoll::is_data_available.load()){
+            std::lock_guard<std::mutex> _lock(HttpPoll::data_mtx);
+            text = std::move(HttpPoll::data.front());
+            HttpPoll::data.pop();
+            HttpPoll::is_data_available.store(false);
+        }
         ImGui::End();
 
         // Show the built-in demo window (useful for learning)
