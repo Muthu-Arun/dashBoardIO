@@ -27,7 +27,7 @@ void pollHttp(std::string_view url,
 void add_timed_event();
 
 class Poll {
-private:
+protected:
   std::variant<std::string, Json::Value> response_body;
   HttpClientPtr client;
   ReqResult result;
@@ -39,9 +39,8 @@ private:
 public:
   Poll(std::string_view remote_url, uint16_t port);
   static void init() noexcept;
-  auto getBody() const noexcept;
   bool is_data_available() const noexcept;
-
+  std::pair<const std::variant<std::string, Json::Value>&, std::mutex&> getBody() const noexcept;
 private:
 };
 

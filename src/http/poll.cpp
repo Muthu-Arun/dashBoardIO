@@ -2,9 +2,13 @@
 #include "poll.h"
 #include <cstdint>
 #include <drogon/HttpAppFramework.h>
+#include <json/value.h>
 #include <memory>
+#include <mutex>
 #include <string_view>
 #include <thread>
+#include <tuple>
+#include <utility>
 
 namespace HttpPoll {
 // Keep the client alive to reuse TCP connections
@@ -46,9 +50,9 @@ void pollData() {
     }
   });
 }
-auto Poll::getBody() const noexcept {
-  std::lock_guard<std::mutex> _lock(mtx);
-  return response_body;
+
+std::pair<const std::variant<std::string, Json::Value>&, std::mutex&> Poll::getBody() const noexcept{
+    return {response_body, mtx};
 }
 
 bool Poll::is_data_available() const noexcept {
