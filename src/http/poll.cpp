@@ -1,7 +1,9 @@
 
 #include "poll.h"
+#include <cstdint>
 #include <drogon/HttpAppFramework.h>
 #include <memory>
+#include <string_view>
 #include <thread>
 
 namespace HttpPoll {
@@ -44,11 +46,21 @@ void pollData() {
     }
   });
 }
-auto Poll::getBody() const {
+auto Poll::getBody() const noexcept {
   std::lock_guard<std::mutex> _lock(mtx);
   return response_body;
 }
 
-bool Poll::is_data_available() const { return is_new_body_available.load(); }
+bool Poll::is_data_available() const noexcept {
+  return is_new_body_available.load();
+}
+
+void Poll::init() noexcept{
+
+}
+
+Poll::Poll(std::string_view remote_url, uint16_t port = 80) : remote_url(remote_url), port(port){
+    client = HttpClient::newHttpClient(this->remote_url, port);
+}
 
 } // namespace HttpPoll

@@ -1,7 +1,7 @@
 #include <atomic>
-#include <cstddef>
+#include <cstdint>
 #include <drogon/HttpClient.h>
-#include <iterator>
+#include <functional>
 #include <json/value.h>
 #include <memory>
 #include <mutex>
@@ -29,15 +29,20 @@ void add_timed_event();
 class Poll {
 private:
   std::variant<std::string, Json::Value> response_body;
-  std::unique_ptr<HttpClient> client;
+  HttpClientPtr client;
   ReqResult result;
   mutable std::mutex mtx;
   std::atomic<bool> is_new_body_available = 0;
-  static std::unique_ptr<std::thread> poll_thread;
+  std::string remote_url;
+  uint64_t port;
 
 public:
-  auto getBody() const;
-  bool is_data_available() const;
+  Poll(std::string_view remote_url, uint16_t port);
+  static void init() noexcept;
+  auto getBody() const noexcept;
+  bool is_data_available() const noexcept;
+
+private:
 };
 
 } // namespace HttpPoll
