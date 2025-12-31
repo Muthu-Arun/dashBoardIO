@@ -53,29 +53,33 @@ void pollData() {
   });
 }
 
-std::pair<const std::variant<std::string, Json::Value>&, std::mutex&> Poll::getBody() const noexcept{
-    return {response_body, res_body_mtx};
+std::pair<const std::variant<std::string, Json::Value> &, std::mutex &>
+Poll::getBody() const noexcept {
+  return {response_body, res_body_mtx};
 }
 
 bool Poll::is_data_available() const noexcept {
   return is_new_data_available.load();
 }
 
-void Poll::init() noexcept{
-
-}
-
-Poll::Poll(std::string_view remote_url, std::string_view endpoint, uint16_t port = 80) : remote_url(remote_url), port(port), endpoint(endpoint){
-    client = HttpClient::newHttpClient(this->remote_url, port);
-    request = HttpRequest::newHttpRequest();
-    request->setPath(this->endpoint);
-    timer_id = drogon::app().getLoop()->runEvery(std::chrono::milliseconds(100), [this](){
-        client->sendRequest(request, [this](drogon::ReqResult result, const HttpResponsePtr& response){
-            std::lock_guard<std::mutex> _lock(res_body_mtx);
-            response_body.emplace<std::string>(response->body());
-            is_new_data_available.store(true);
+Poll::Poll(std::string_view remote_url, std::string_view endpoint,
+           uint16_t port = 80)
+    : remote_url(remote_url), port(port), endpoint(endpoint) {
+  client = HttpClient::newHttpClient(this->remote_url, port);
+  request = HttpRequest::newHttpRequest();
+  request->setPath(this->endpoint);
+  timer_id = drogon::app().getLoop()->runEvery(
+      std::chrono::milliseconds(100), [this]() {
+        client->sendRequest(request, [this](drogon::ReqResult result,
+                                            const HttpResponsePtr &response) {
+          std::lock_guard<std::mutex> _lock(res_body_mtx);
+          response_body.emplace<std::string>(response->body());
+          is_new_data_available.store(true);
         });
-    });
+      });
+}
+Poll::~Poll() {
+  drogon::app().getLoop()->invalidateTimer(timer_id); // Stops the Polling task
 }
 
 } // namespace HttpPoll

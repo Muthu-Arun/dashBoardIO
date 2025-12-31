@@ -42,9 +42,9 @@ protected:
 
 public:
   Poll(std::string_view remote_url, std::string_view endpoint, uint16_t port);
-  static void init() noexcept;
   bool is_data_available() const noexcept;
   std::pair<const std::variant<std::string, Json::Value>&, std::mutex&> getBody() const noexcept;
+  ~Poll();
 
 private:
   HttpClientPtr client;
