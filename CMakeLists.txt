@@ -23,8 +23,12 @@ set(IMGUI_SOURCES
 )
 set(HTTP_SOURCES
     src/http/poll.cpp)
+set(WIDGET_SOURCES
+    src/widget/widget.cpp)
+set(WINDOW_SOURCES
+    src/window/window.cpp)
 # 3. Create the Executable
-add_executable(app src/main.cpp ${IMGUI_SOURCES} ${HTTP_SOURCES})
+add_executable(app src/main.cpp ${IMGUI_SOURCES} ${HTTP_SOURCES} ${WIDGET_SOURCES} ${WINDOW_SOURCES})
 
 # 4. Include Directories
 # Allow includes like <imgui.h> and <backends/imgui_impl_glfw.h>
