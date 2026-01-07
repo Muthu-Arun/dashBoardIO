@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(MyImGuiApp)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 
 # 1. Find system dependencies (GLFW and OpenGL)
 find_package(glfw3 REQUIRED)
@@ -32,6 +32,10 @@ target_include_directories(app PUBLIC
     ${IMGUI_DIR} 
     ${IMGUI_DIR}/backends
     ${SRC_DIR}/http
+    ${SRC_DIR}/widget
+    ${SRC_DIR}/window
+    ${SRC_DIR}/render
+    ${SRC_DIR}/utils
 )
 
 # 5. Link Libraries
