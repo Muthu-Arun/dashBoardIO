@@ -1,5 +1,7 @@
 #include <concepts>
+#include <cstdint>
 #include <deque>
+#include <functional>
 #include <string>
 namespace Widget {
 // Data expressed by the widget is owned by it to create a double buffer
@@ -18,10 +20,15 @@ public:
   ~graph() {}
 };
 
-class button : public widget {
+template <typename _callable = std::function<void()>> class button : public widget {
+private:
+  _callable call_on_event;
+
 public:
-  void draw() override;
-  void action() override;
+  enum class event : uint8_t {ON_CLICK, ON_RELEASE};
+
+  void draw() override {}
+  void action() override { call_on_event(); }
   ~button() {}
 };
 
