@@ -11,4 +11,8 @@ void window::render() {
 void window::addWidget(const std::string &id, std::unique_ptr<Widget::widget> widget){
   widgets.emplace(id, std::move(widget));
 }
+
+void window::removeWidget(const std::string &id){
+  widgets.erase(id);
+}
 } // namespace Window
