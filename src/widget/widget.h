@@ -34,6 +34,10 @@ public:
     switch (ptype) {
       case type::LINES:
         ImGui::PlotLines(label.c_str(), data.data(), buffer_max_limit);
+        break;
+      case type::HISTOGRAM:
+        ImGui::PlotHistogram(label.c_str(), data.data(), buffer_max_limit);
+        break;
     }
   }
   ~Plot() {}
