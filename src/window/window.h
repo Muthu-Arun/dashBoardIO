@@ -1,8 +1,6 @@
 #include "widget.h"
-#include <map>
 #include <memory>
 #include <unordered_map>
-#include <vector>
 namespace Window {
 class window {
 public:
