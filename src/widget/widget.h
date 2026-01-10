@@ -1,4 +1,5 @@
 #include "imgui.h"
+#include <array>
 #include <atomic>
 #include <concepts>
 #include <cstddef>
@@ -83,6 +84,7 @@ public:
       std::lock_guard<std::mutex> lock(data_mtx);
       data = *src;
       is_data_available.store(false);
+      is_being_copied.store(false);
     }
   }
   ~text() {}
@@ -92,10 +94,22 @@ template <typename _data_type>
   requires std::integral<_data_type> || std::floating_point<_data_type>
 class radial_gauge : public widget {
 public:
-  radial_gauge(std::string_view _label) : widget(_label) {}
+  std::array<_data_type, 2> range;
+  std::shared_ptr<_data_type> src;
+  radial_gauge(std::string_view _label, _data_type min, _data_type max) : widget(_label), range{min, max} {}
 
   _data_type data;
   void draw() override {}
+  void copyFromSource() override{
+    if (is_data_available.load()) {
+      is_being_copied.store(true);
+      std::lock_guard<std::mutex> lock(data_mtx);
+      data = *src;
+      is_data_available.store(false);
+      is_being_copied.store(false);
+    }
+
+  }
   ~radial_gauge() {}
 };
 
