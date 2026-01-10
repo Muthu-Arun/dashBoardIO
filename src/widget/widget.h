@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 #include <vector>
+
 namespace Widget {
 // Data expressed by the widget is owned by it to create a double buffer
 class widget {
@@ -21,28 +22,30 @@ public:
   widget(std::string_view _label) : label(_label) {}
   virtual void draw() = 0;
   virtual void action();
+  virtual void copyFromSource() = 0;
   virtual ~widget() = 0;
 };
 template <typename _data_type>
   requires /*std::integral<_data_type> || */ std::floating_point<_data_type>
 class Plot : public widget {
 public:
-  enum class type : uint8_t {LINES, HISTOGRAM};
-  std::weak_ptr<_data_type> src;
+  enum class type : uint8_t { LINES, HISTOGRAM };
+  std::shared_ptr<_data_type> src;
   type ptype;
   size_t buffer_max_limit = 10000;
   std::vector<_data_type> data = std::vector<_data_type>(buffer_max_limit, 0);
-  Plot(std::string_view _label, type _ptype, std::shared_ptr<_data_type>& _data_source) : widget(_label), ptype(_ptype), src(_data_source) {
-  }
+  Plot(std::string_view _label, type _ptype,
+       std::shared_ptr<_data_type> &_data_source)
+      : widget(_label), ptype(_ptype), src(_data_source) {}
 
   void draw() override {
     switch (ptype) {
-      case type::LINES:
-        ImGui::PlotLines(label.c_str(), data.data(), buffer_max_limit);
-        break;
-      case type::HISTOGRAM:
-        ImGui::PlotHistogram(label.c_str(), data.data(), buffer_max_limit);
-        break;
+    case type::LINES:
+      ImGui::PlotLines(label.c_str(), data.data(), buffer_max_limit);
+      break;
+    case type::HISTOGRAM:
+      ImGui::PlotHistogram(label.c_str(), data.data(), buffer_max_limit);
+      break;
     }
   }
   ~Plot() {}
@@ -67,14 +70,20 @@ public:
   ~button() {}
 };
 
-template <typename _data_type = std::string>
-class text : public widget {
+template <typename _data_type = std::string> class text : public widget {
 public:
   text(std::string_view _label) : widget(_label) {}
   _data_type data;
-  std::weak_ptr<_data_type> src;
-  void draw() override {
 
+  std::shared_ptr<_data_type> src;
+  void draw() override {}
+  void copyFromSource() override {
+    if (is_data_available.load()) {
+      is_being_copied.store(true);
+      std::lock_guard<std::mutex> lock(data_mtx);
+      data = *src;
+      is_data_available.store(false);
+    }
   }
   ~text() {}
 };
