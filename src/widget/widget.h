@@ -1,19 +1,23 @@
 #include "imgui.h"
+#include <atomic>
 #include <concepts>
 #include <cstddef>
 #include <cstdint>
-#include <deque>
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <string_view>
-#include <type_traits>
 #include <vector>
 namespace Widget {
 // Data expressed by the widget is owned by it to create a double buffer
 class widget {
 public:
   std::string label;
+  std::mutex data_mtx;
+  std::mutex src_mtx;
+  std::atomic<bool> is_being_copied = 0;
+  std::atomic<bool> is_data_available = 0;
   widget(std::string_view _label) : label(_label) {}
   virtual void draw() = 0;
   virtual void action();
@@ -24,10 +28,11 @@ template <typename _data_type>
 class Plot : public widget {
 public:
   enum class type : uint8_t {LINES, HISTOGRAM};
+  std::weak_ptr<_data_type> src;
   type ptype;
   size_t buffer_max_limit = 10000;
   std::vector<_data_type> data = std::vector<_data_type>(buffer_max_limit, 0);
-  Plot(std::string_view _label, type _ptype) : widget(_label), ptype(_ptype) {
+  Plot(std::string_view _label, type _ptype, std::shared_ptr<_data_type>& _data_source) : widget(_label), ptype(_ptype), src(_data_source) {
   }
 
   void draw() override {
@@ -67,6 +72,7 @@ class text : public widget {
 public:
   text(std::string_view _label) : widget(_label) {}
   _data_type data;
+  std::weak_ptr<_data_type> src;
   void draw() override {
 
   }
