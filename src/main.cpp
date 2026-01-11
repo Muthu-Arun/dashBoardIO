@@ -3,10 +3,13 @@
 #include "imgui_impl_opengl3.h"
 #include <GLFW/glfw3.h>
 #include <atomic>
+#include <memory>
 #include <mutex>
 #include <stdio.h>
 #include <utility>
 #include "poll.h"
+#include "widget.h"
+#include "window.h"
 int main(int, char**)
 {
     // 1. Setup GLFW
@@ -38,7 +41,8 @@ int main(int, char**)
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
-
+    Window::window win("hello");
+    win.addWidget("win1", std::make_unique<Widget::text<>>("sample"));
     // 3. Main loop
     while (!glfwWindowShouldClose(window))
     {
@@ -48,17 +52,18 @@ int main(int, char**)
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+        win.render();
 
-        ImGui::Begin("Hello, Linux!");
-        ImGui::Text("%s", text.c_str());
-        if(HttpPoll::is_data_available.load(std::memory_order_acquire)){
-            std::lock_guard<std::mutex> _lock(HttpPoll::data_mtx);
-            text = std::move(HttpPoll::data.front());
-            HttpPoll::data.pop();
-            HttpPoll::is_data_available.store(false);
+        // ImGui::Begin("Hello, Linux!");
+        // ImGui::Text("%s", text.c_str());
+        // if(HttpPoll::is_data_available.load(std::memory_order_acquire)){
+        //     std::lock_guard<std::mutex> _lock(HttpPoll::data_mtx);
+        //     text = std::move(HttpPoll::data.front());
+        //     HttpPoll::data.pop();
+        //     HttpPoll::is_data_available.store(false);
 
-        }
-        ImGui::End();
+        // }
+        // ImGui::End();
 
         // Show the built-in demo window (useful for learning)
         // ImGui::ShowDemoWindow();
