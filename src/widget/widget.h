@@ -22,7 +22,7 @@ public:
   std::atomic<bool> is_data_available = 0;
   widget(std::string_view _label) : label(_label) {}
   virtual void draw() = 0;
-  virtual void action();
+  // virtual void action();
   virtual void copyFromSource() = 0;
   virtual ~widget() = 0;
 };
@@ -67,7 +67,6 @@ public:
       call_on_event();
     }
   }
-  // void action() override { call_on_event(); }
   ~button() {}
 };
 
@@ -93,14 +92,41 @@ public:
 template <typename _data_type>
   requires std::integral<_data_type> || std::floating_point<_data_type>
 class radial_gauge : public widget {
+protected:
+  float width = 200.0f; // Total width
+  float radius = width / 2.0f;
+  float start_angle = 3.14159f * 0.75f;
+  float end_angle = 3.14159f * 2.25f;
+
 public:
   std::array<_data_type, 2> range;
   std::shared_ptr<_data_type> src;
-  radial_gauge(std::string_view _label, _data_type min, _data_type max) : widget(_label), range{min, max} {}
+  radial_gauge(std::string_view _label, _data_type min, _data_type max)
+      : widget(_label), range{min, max} {}
 
   _data_type data;
-  void draw() override {}
-  void copyFromSource() override{
+  void draw() override {
+    // INIT
+    ImVec2 pos = ImGui::GetCursorScreenPos(); // Top-left corner of the widget
+    ImVec2 center = ImVec2(pos.x + radius, pos.y + radius);
+    ImGui::Dummy(ImVec2(width, width)); // Reserve the space
+
+    // DRAW
+    ImDrawList *draw_list = ImGui::GetWindowDrawList();
+
+    // Draw the grey "background" arc
+    draw_list->PathArcTo(center, radius, start_angle, end_angle,
+                         32); // 32 segments for smoothness
+    draw_list->PathStroke(ImGui::GetColorU32(ImGuiCol_FrameBg), 0,
+                          10.0f); // 10px thickness
+    float current_angle =
+        start_angle + (end_angle - start_angle) * (data / range[1]);
+
+    draw_list->PathArcTo(center, radius, start_angle, current_angle, 32);
+    draw_list->PathStroke(ImGui::GetColorU32(ImGuiCol_PlotHistogram), 0, 10.0f);
+  }
+
+  void copyFromSource() override {
     if (is_data_available.load()) {
       is_being_copied.store(true);
       std::lock_guard<std::mutex> lock(data_mtx);
@@ -108,7 +134,6 @@ public:
       is_data_available.store(false);
       is_being_copied.store(false);
     }
-
   }
   ~radial_gauge() {}
 };
