@@ -16,7 +16,7 @@ namespace Widget {
 class widget {
 public:
   std::string label;
-  std::mutex data_mtx;
+  // std::mutex data_mtx;
   std::mutex src_mtx;
   std::atomic<bool> is_being_copied = 0;
   std::atomic<bool> is_data_available = 0;
@@ -80,7 +80,7 @@ public:
   void copyFromSource() override {
     if (is_data_available.load()) {
       is_being_copied.store(true);
-      std::lock_guard<std::mutex> lock(data_mtx);
+      std::lock_guard<std::mutex> lock(src_mtx);
       data = *src;
       is_data_available.store(false);
       is_being_copied.store(false);
@@ -129,7 +129,7 @@ public:
   void copyFromSource() override {
     if (is_data_available.load()) {
       is_being_copied.store(true);
-      std::lock_guard<std::mutex> lock(data_mtx);
+      std::lock_guard<std::mutex> lock(src_mtx);
       data = *src;
       is_data_available.store(false);
       is_being_copied.store(false);
