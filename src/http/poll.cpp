@@ -5,11 +5,9 @@
 #include <drogon/HttpAppFramework.h>
 #include <drogon/HttpTypes.h>
 #include <json/value.h>
-#include <memory>
 #include <mutex>
 #include <string_view>
 #include <thread>
-#include <tuple>
 #include <utility>
 
 namespace HttpPoll {

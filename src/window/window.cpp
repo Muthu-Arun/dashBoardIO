@@ -4,6 +4,7 @@
 namespace Window {
 void window::render() {
   for (auto& widget : widgets) {
+    widget.second->copyFromSource();
     widget.second->draw();
   }
 }

@@ -91,7 +91,9 @@ public:
   _data_type data;
 
   std::shared_ptr<_data_type> src;
-  void draw() override {}
+  void draw() override {
+    ImGui::Text("%s", data.c_str());
+  }
   void copyFromSource() override {
     if (is_data_available.load()) {
       is_being_copied.store(true);
