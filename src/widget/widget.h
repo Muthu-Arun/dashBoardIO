@@ -108,10 +108,13 @@ template <typename _data_type>
   requires std::integral<_data_type> || std::floating_point<_data_type>
 class radial_gauge : public widget {
 protected:
-  float width = 200.0f; // Total width
-  float radius = width / 2.0f;
-  float start_angle = 3.14159f * 0.75f;
-  float end_angle = 3.14159f * 2.25f;
+struct Coordinates{
+  float width;
+  float radius;
+  float start_angle;
+  float end_angle;
+
+};
 
 public:
   std::array<_data_type, 2> range;
@@ -120,24 +123,25 @@ public:
       : widget(_label), range{min, max} {}
 
   _data_type data;
+  Coordinates coordinates{200.0f, 200.0f / 2.0f, 3.14159f * 0.75f, 3.14159f * 2.25f};
   void draw() override {
     // INIT
     ImVec2 pos = ImGui::GetCursorScreenPos(); // Top-left corner of the widget
-    ImVec2 center = ImVec2(pos.x + radius, pos.y + radius);
-    ImGui::Dummy(ImVec2(width, width)); // Reserve the space
+    ImVec2 center = ImVec2(pos.x + coordinates.radius, pos.y + coordinates.radius);
+    ImGui::Dummy(ImVec2(coordinates.width, coordinates.width)); // Reserve the space
 
     // DRAW
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
 
     // Draw the grey "background" arc
-    draw_list->PathArcTo(center, radius, start_angle, end_angle,
+    draw_list->PathArcTo(center, coordinates.radius, coordinates.start_angle, coordinates.end_angle,
                          32); // 32 segments for smoothness
     draw_list->PathStroke(ImGui::GetColorU32(ImGuiCol_FrameBg), 0,
                           10.0f); // 10px thickness
     float current_angle =
-        start_angle + (end_angle - start_angle) * (data / range[1]);
+        coordinates.start_angle + (coordinates.end_angle - coordinates.start_angle) * (data / range[1]);
 
-    draw_list->PathArcTo(center, radius, start_angle, current_angle, 32);
+    draw_list->PathArcTo(center, coordinates.radius, coordinates.start_angle, current_angle, 32);
     draw_list->PathStroke(ImGui::GetColorU32(ImGuiCol_PlotHistogram), 0, 10.0f);
   }
 
