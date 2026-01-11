@@ -1,6 +1,7 @@
 #include "imgui.h"
 #include <array>
 #include <atomic>
+#include <cmath>
 #include <concepts>
 #include <cstddef>
 #include <cstdint>
@@ -33,7 +34,7 @@ public:
   enum class type : uint8_t { LINES, HISTOGRAM };
   std::shared_ptr<_data_type> src;
   type ptype;
-  size_t buffer_max_limit = 10000;
+  size_t buffer_max_limit = 16384; // 2^14
   std::vector<_data_type> data = std::vector<_data_type>(buffer_max_limit, 0);
   Plot(std::string_view _label, type _ptype,
        std::shared_ptr<_data_type> &_data_source)
@@ -42,14 +43,28 @@ public:
   void draw() override {
     switch (ptype) {
     case type::LINES:
-      ImGui::PlotLines(label.c_str(), data.data(), buffer_max_limit);
+      ImGui::PlotLines(label.c_str(), data.data(), buffer_max_limit, head);
       break;
     case type::HISTOGRAM:
-      ImGui::PlotHistogram(label.c_str(), data.data(), buffer_max_limit);
+      ImGui::PlotHistogram(label.c_str(), data.data(), buffer_max_limit, head);
       break;
     }
   }
+
+  void copyFromSource() override{
+    if (is_data_available.load()) {
+      is_being_copied.store(true);
+      std::lock_guard<std::mutex> lock(src_mtx);
+    
+    }
+  }
   ~Plot() {}
+private:
+  size_t head = 0;
+  void pushData(){
+    data[head] = *src;
+    head = (head + 1) & (buffer_max_limit - 1);
+  }
 };
 
 template <typename _callable = std::function<void()>>
