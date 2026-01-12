@@ -12,7 +12,7 @@ void window::render() {
 }
 
 void window::addWidget(const std::string_view id,
-                       std::unique_ptr<Widget::widget> widget) {
+                       std::unique_ptr<Widgets::Widget> widget) {
   widgets.emplace(id, std::move(widget));
 }
 

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(MyImGuiApp)
 
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 20)
 
 # 1. Find system dependencies (GLFW and OpenGL)
 find_package(glfw3 REQUIRED)
@@ -27,8 +27,10 @@ set(WIDGET_SOURCES
     src/widget/widget.cpp)
 set(WINDOW_SOURCES
     src/window/window.cpp)
+set(PARSING_SOURCES
+    src/parsenrender/json.cpp)
 # 3. Create the Executable
-add_executable(app src/main.cpp ${IMGUI_SOURCES} ${HTTP_SOURCES} ${WIDGET_SOURCES} ${WINDOW_SOURCES})
+add_executable(app src/main.cpp ${IMGUI_SOURCES} ${HTTP_SOURCES} ${WIDGET_SOURCES} ${WINDOW_SOURCES} ${PARSING_SOURCES})
 
 # 4. Include Directories
 # Allow includes like <imgui.h> and <backends/imgui_impl_glfw.h>
@@ -40,6 +42,7 @@ target_include_directories(app PUBLIC
     ${SRC_DIR}/window
     ${SRC_DIR}/render
     ${SRC_DIR}/utils
+    ${SRC_DIR}/parsenrender
 )
 
 # 5. Link Libraries
