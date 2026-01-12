@@ -41,8 +41,8 @@ int main(int, char**)
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
-    Window::window win("hello");
-    win.addWidget("win1", std::make_unique<Widget::text<>>("sample"));
+    // Window::window win("hello");
+    // win.addWidget("win1", std::make_unique<Widget::text<>>("sample"));
     // 3. Main loop
     while (!glfwWindowShouldClose(window))
     {
@@ -52,7 +52,7 @@ int main(int, char**)
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-        win.render();
+        // win.render();
 
         // ImGui::Begin("Hello, Linux!");
         // ImGui::Text("%s", text.c_str());

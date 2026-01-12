@@ -19,7 +19,6 @@ class widget {
 public:
   std::string label;
   // std::mutex data_mtx;
-  std::mutex src_mtx;
   std::atomic<bool> is_being_copied = 0;
   std::atomic<bool> is_data_available = 0;
   widget(std::string_view _label);
@@ -34,12 +33,15 @@ class Plot : public widget {
 public:
   enum class type : uint8_t { LINES, HISTOGRAM };
   std::shared_ptr<_data_type> src;
+  std::mutex& src_mtx;
   type ptype;
   size_t buffer_max_limit = 16384; // 2^14
   std::vector<_data_type> data = std::vector<_data_type>(buffer_max_limit, 0);
+
   Plot(std::string_view _label, type _ptype,
-       std::shared_ptr<_data_type> &_data_source)
-      : widget(_label), ptype(_ptype), src(_data_source) {}
+       std::shared_ptr<_data_type> &_data_source,
+      std::mutex& src_mtx)
+      : widget(_label), ptype(_ptype), src(_data_source), src_mtx(src_mtx) {}
 
   void draw() override {
     switch (ptype) {
@@ -88,10 +90,12 @@ public:
 
 template <typename _data_type = std::string> class text : public widget {
 public:
-  text(std::string_view _label) : widget(_label) {}
   _data_type data = std::string("hello");
 
   std::shared_ptr<_data_type> src;
+  std::mutex &src_mtx;
+
+  text(std::string_view _label, std::mutex &src_mtx) : widget(_label), src_mtx(src_mtx) {}
   void draw() override { ImGui::Text("%s", data.c_str()); }
   void copyFromSource() override {
     if (is_data_available.load()) {
@@ -119,10 +123,12 @@ protected:
 public:
   std::array<_data_type, 2> range;
   std::shared_ptr<_data_type> src;
-  radial_gauge(std::string_view _label, _data_type min, _data_type max)
-      : widget(_label), range{min, max} {}
-
+  std::mutex &src_mtx;
   _data_type data;
+
+  radial_gauge(std::string_view _label, _data_type min, _data_type max, std::mutex &src_mtx)
+      : widget(_label), range{min, max}, src_mtx(src_mtx) {}
+
   Coordinates coordinates{200.0f, 200.0f / 2.0f, 3.14159f * 0.75f,
                           3.14159f * 2.25f};
   void draw() override {
