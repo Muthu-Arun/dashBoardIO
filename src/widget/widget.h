@@ -125,13 +125,14 @@ public:
   std::shared_ptr<_data_type> src;
   std::mutex &src_mtx;
   _data_type data;
+  Coordinates coordinates;
 
   RadialGauge(std::string_view _label, _data_type min, _data_type max,
-               std::mutex &src_mtx)
-      : Widget(_label), range{min, max}, src_mtx(src_mtx) {}
+              std::mutex &src_mtx,
+              Coordinates coordn = {200.0f, 200.0f / 2.0f, 3.14159f * 0.75f,
+                                    3.14159f * 2.25f})
+      : Widget(_label), range{min, max}, src_mtx(src_mtx), coordinates(coordn) {}
 
-  Coordinates coordinates{200.0f, 200.0f / 2.0f, 3.14159f * 0.75f,
-                          3.14159f * 2.25f};
   void draw() override {
     // INIT
     ImVec2 pos = ImGui::GetCursorScreenPos(); // Top-left corner of the widget
@@ -170,4 +171,4 @@ public:
   ~RadialGauge() {}
 };
 
-} // namespace Widget
+} // namespace Widgets
