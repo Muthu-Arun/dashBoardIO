@@ -94,8 +94,9 @@ public:
   std::shared_ptr<_data_type> src;
   std::mutex &src_mtx;
 
-  Text(std::string_view _label, std::mutex &src_mtx)
-      : Widget(_label), src_mtx(src_mtx) {}
+  Text(std::string_view _label, std::shared_ptr<_data_type> &src,
+       std::mutex &src_mtx)
+      : Widget(_label), src(src), src_mtx(src_mtx) {}
   void draw() override { ImGui::Text("%s", data.c_str()); }
   void copyFromSource() override {
     if (is_data_available.load()) {
@@ -128,10 +129,11 @@ public:
   Coordinates coordinates;
 
   RadialGauge(std::string_view _label, _data_type min, _data_type max,
-              std::mutex &src_mtx,
+              std::shared_ptr<_data_type> &src, std::mutex &src_mtx,
               Coordinates coordn = {200.0f, 200.0f / 2.0f, 3.14159f * 0.75f,
                                     3.14159f * 2.25f})
-      : Widget(_label), range{min, max}, src_mtx(src_mtx), coordinates(coordn) {}
+      : Widget(_label), range{min, max}, src(src), src_mtx(src_mtx),
+        coordinates(coordn) {}
 
   void draw() override {
     // INIT
@@ -170,5 +172,16 @@ public:
   }
   ~RadialGauge() {}
 };
+class TextInput : public Widget {
+  std::shared_ptr<std::string> src;
+  std::mutex &src_mtx;
+  std::string data;
+  size_t string_capacity;
 
+  TextInput(std::string_view label, std::shared_ptr<std::string> &src,
+            std::mutex &src_mtx, size_t string_capacity = 1024);
+  ~TextInput();
+  void draw() override;
+  void copyFromSource() override;
+};
 } // namespace Widgets
