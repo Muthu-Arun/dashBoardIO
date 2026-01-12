@@ -70,31 +70,31 @@ private:
 };
 
 template <typename _callable = std::function<void()>>
-class button : public Widget {
+class Button : public Widget {
 private:
   _callable call_on_event;
 
 public:
   enum class event : uint8_t { ON_CLICK, ON_RELEASE };
 
-  button(std::string_view _label) : Widget(_label) {}
+  Button(std::string_view _label) : Widget(_label) {}
 
   void draw() override {
     if (ImGui::Button(label.c_str())) {
       call_on_event();
     }
   }
-  ~button() {}
+  ~Button() {}
 };
 
-template <typename _data_type = std::string> class text : public Widget {
+template <typename _data_type = std::string> class Text : public Widget {
 public:
   _data_type data = std::string("hello");
 
   std::shared_ptr<_data_type> src;
   std::mutex &src_mtx;
 
-  text(std::string_view _label, std::mutex &src_mtx)
+  Text(std::string_view _label, std::mutex &src_mtx)
       : Widget(_label), src_mtx(src_mtx) {}
   void draw() override { ImGui::Text("%s", data.c_str()); }
   void copyFromSource() override {
@@ -106,12 +106,12 @@ public:
       is_being_copied.store(false);
     }
   }
-  ~text() {}
+  ~Text() {}
 };
 
 template <typename _data_type>
   requires std::integral<_data_type> || std::floating_point<_data_type>
-class radial_gauge : public Widget {
+class RadialGauge : public Widget {
 protected:
   struct Coordinates {
     float width;
@@ -126,7 +126,7 @@ public:
   std::mutex &src_mtx;
   _data_type data;
 
-  radial_gauge(std::string_view _label, _data_type min, _data_type max,
+  RadialGauge(std::string_view _label, _data_type min, _data_type max,
                std::mutex &src_mtx)
       : Widget(_label), range{min, max}, src_mtx(src_mtx) {}
 
@@ -167,7 +167,7 @@ public:
       is_being_copied.store(false);
     }
   }
-  ~radial_gauge() {}
+  ~RadialGauge() {}
 };
 
 } // namespace Widget
