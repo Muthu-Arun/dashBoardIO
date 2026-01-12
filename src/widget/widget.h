@@ -173,10 +173,11 @@ public:
   ~RadialGauge() {}
 };
 class TextInput : public Widget {
+public:
   std::shared_ptr<std::string> src;
   std::mutex &src_mtx;
+  size_t string_capacity; // Declare before string, using memb init list
   std::string data;
-  size_t string_capacity;
 
   TextInput(std::string_view label, std::shared_ptr<std::string> &src,
             std::mutex &src_mtx, size_t string_capacity = 1024);
