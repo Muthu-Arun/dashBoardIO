@@ -1,5 +1,3 @@
----
-# Base style to build upon
 BasedOnStyle: Google
 
 # Indentation and Column Limit
@@ -12,7 +10,7 @@ UseTab: Never
 BreakBeforeBraces: Custom
 BraceWrapping:
   AfterClass: true
-  AfterControlStatement: MultiLine
+  AfterControlStatement: true
   AfterEnum: true
   AfterFunction: true
   AfterNamespace: true
@@ -28,14 +26,13 @@ Standard: Latest
 AccessModifierOffset: -4
 PackConstructorInitializers: NextLine
 AllowShortFunctionsOnASingleLine: Inline
-AllowShortIfStatementsOnASingleLine: Never
-AllowShortLoopsOnASingleLine: Never
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
 
-# Pointer/Reference alignment (Right is standard for many, Left for others)
+# Pointer/Reference alignment
 DerivePointerAlignment: false
 PointerAlignment: Left
 
 # Spaces and Padding
 SpaceAfterCStyleCast: true
 SpaceBeforeRangeBasedForLoopColon: true
----
