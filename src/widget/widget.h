@@ -14,11 +14,9 @@
 
 #include "imgui.h"
 
-namespace Widgets
-{
+namespace Widgets {
 // Data expressed by the widget is owned by it to create a double buffer
-class Widget
-{
+class Widget {
 public:
     std::string label;
     // std::mutex data_mtx;
@@ -32,14 +30,9 @@ public:
 };
 template <typename _data_type>
     requires /*std::integral<_data_type> || */ std::floating_point<_data_type>
-class Plot : public Widget
-{
+class Plot : public Widget {
 public:
-    enum class type : uint8_t
-    {
-        LINES,
-        HISTOGRAM
-    };
+    enum class type : uint8_t { LINES, HISTOGRAM };
     std::shared_ptr<_data_type> src;
     std::mutex& src_mtx;
     type ptype;
@@ -48,13 +41,10 @@ public:
 
     Plot(std::string_view _label, type _ptype, std::shared_ptr<_data_type>& _data_source,
          std::mutex& src_mtx)
-        : Widget(_label), ptype(_ptype), src(_data_source), src_mtx(src_mtx)
-    {}
+        : Widget(_label), ptype(_ptype), src(_data_source), src_mtx(src_mtx) {}
 
-    void draw() override
-    {
-        switch (ptype)
-        {
+    void draw() override {
+        switch (ptype) {
             case type::LINES:
                 ImGui::PlotLines(label.c_str(), data.data(), buffer_max_limit, head);
                 break;
@@ -64,10 +54,8 @@ public:
         }
     }
 
-    void copyFromSource() override
-    {
-        if (is_data_available.load())
-        {
+    void copyFromSource() override {
+        if (is_data_available.load()) {
             is_being_copied.store(true);
             std::lock_guard<std::mutex> lock(src_mtx);
         }
@@ -76,32 +64,24 @@ public:
 
 private:
     size_t head = 0;
-    void pushData()
-    {
+    void pushData() {
         data[head] = *src;
         head = (head + 1) & (buffer_max_limit - 1);
     }
 };
 
 template <typename _callable = std::function<void()>>
-class Button : public Widget
-{
+class Button : public Widget {
 private:
     _callable call_on_event;
 
 public:
-    enum class event : uint8_t
-    {
-        ON_CLICK,
-        ON_RELEASE
-    };
+    enum class event : uint8_t { ON_CLICK, ON_RELEASE };
 
     Button(std::string_view _label) : Widget(_label) {}
 
-    void draw() override
-    {
-        if (ImGui::Button(label.c_str()))
-        {
+    void draw() override {
+        if (ImGui::Button(label.c_str())) {
             call_on_event();
         }
     }
@@ -109,8 +89,7 @@ public:
 };
 
 template <typename _data_type = std::string>
-class Text : public Widget
-{
+class Text : public Widget {
 public:
     _data_type data = std::string("hello");
 
@@ -118,13 +97,10 @@ public:
     std::mutex& src_mtx;
 
     Text(std::string_view _label, std::shared_ptr<_data_type>& src, std::mutex& src_mtx)
-        : Widget(_label), src(src), src_mtx(src_mtx)
-    {}
+        : Widget(_label), src(src), src_mtx(src_mtx) {}
     void draw() override { ImGui::Text("%s", data.c_str()); }
-    void copyFromSource() override
-    {
-        if (is_data_available.load())
-        {
+    void copyFromSource() override {
+        if (is_data_available.load()) {
             is_being_copied.store(true);
             std::lock_guard<std::mutex> lock(src_mtx);
             data = *src;
@@ -137,11 +113,9 @@ public:
 
 template <typename _data_type>
     requires std::integral<_data_type> || std::floating_point<_data_type>
-class RadialGauge : public Widget
-{
+class RadialGauge : public Widget {
 protected:
-    struct Coordinates
-    {
+    struct Coordinates {
         float width;
         float radius;
         float start_angle;
@@ -158,11 +132,9 @@ public:
     RadialGauge(std::string_view _label, _data_type min, _data_type max,
                 std::shared_ptr<_data_type>& src, std::mutex& src_mtx,
                 Coordinates coordn = {200.0f, 200.0f / 2.0f, 3.14159f * 0.75f, 3.14159f * 2.25f})
-        : Widget(_label), range{min, max}, src(src), src_mtx(src_mtx), coordinates(coordn)
-    {}
+        : Widget(_label), range{min, max}, src(src), src_mtx(src_mtx), coordinates(coordn) {}
 
-    void draw() override
-    {
+    void draw() override {
         // INIT
         ImVec2 pos = ImGui::GetCursorScreenPos();  // Top-left corner of the widget
         ImVec2 center = ImVec2(pos.x + coordinates.radius, pos.y + coordinates.radius);
@@ -185,10 +157,8 @@ public:
         draw_list->PathStroke(ImGui::GetColorU32(ImGuiCol_PlotHistogram), 0, 10.0f);
     }
 
-    void copyFromSource() override
-    {
-        if (is_data_available.load())
-        {
+    void copyFromSource() override {
+        if (is_data_available.load()) {
             is_being_copied.store(true);
             std::lock_guard<std::mutex> lock(src_mtx);
             data = *src;
@@ -198,8 +168,7 @@ public:
     }
     ~RadialGauge() {}
 };
-class TextInput : public Widget
-{
+class TextInput : public Widget {
 public:
     std::shared_ptr<std::string> src;
     std::mutex& src_mtx;

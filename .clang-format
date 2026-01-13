@@ -1,38 +1,26 @@
 BasedOnStyle: Google
 
-# Indentation and Column Limit
+# This keeps the { on the same line
+BreakBeforeBraces: Attach
+
+# Indentation and Spacing
 IndentWidth: 4
 ColumnLimit: 100
 TabWidth: 4
 UseTab: Never
 
-# Braces and Alignment
-BreakBeforeBraces: Custom
-BraceWrapping:
-  AfterClass: true
-  AfterControlStatement: true
-  AfterEnum: true
-  AfterFunction: true
-  AfterNamespace: true
-  AfterStruct: true
-  AfterUnion: true
-  BeforeCatch: true
-  BeforeElse: true
-  IndentBraces: false
-  SplitEmptyFunction: false
+# Pointer alignment (int* x)
+DerivePointerAlignment: false
+PointerAlignment: Left
 
-# Modern C++ specific tweaks
+# Modern C++ logic
 Standard: Latest
 AccessModifierOffset: -4
-PackConstructorInitializers: NextLine
+
+# Prevent single-line "hidden" logic
 AllowShortFunctionsOnASingleLine: Inline
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
 
-# Pointer/Reference alignment
-DerivePointerAlignment: false
-PointerAlignment: Left
-
-# Spaces and Padding
-SpaceAfterCStyleCast: true
-SpaceBeforeRangeBasedForLoopColon: true
+# Constructor logic
+PackConstructorInitializers: NextLine

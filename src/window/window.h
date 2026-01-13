@@ -4,10 +4,8 @@
 #include <unordered_map>
 
 #include "widget.h"
-namespace Window
-{
-class Window
-{
+namespace Window {
+class Window {
 public:
     std::string label;  // Window Name
     std::unordered_map<std::string, std::unique_ptr<Widgets::Widget>> widgets;
