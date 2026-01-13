@@ -1,0 +1,41 @@
+---
+# Base style to build upon
+BasedOnStyle: Google
+
+# Indentation and Column Limit
+IndentWidth: 4
+ColumnLimit: 100
+TabWidth: 4
+UseTab: Never
+
+# Braces and Alignment
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterClass: true
+  AfterControlStatement: MultiLine
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+  AfterUnion: true
+  BeforeCatch: true
+  BeforeElse: true
+  IndentBraces: false
+  SplitEmptyFunction: false
+
+# Modern C++ specific tweaks
+Standard: Latest
+AccessModifierOffset: -4
+PackConstructorInitializers: NextLine
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: Never
+
+# Pointer/Reference alignment (Right is standard for many, Left for others)
+DerivePointerAlignment: false
+PointerAlignment: Left
+
+# Spaces and Padding
+SpaceAfterCStyleCast: true
+SpaceBeforeRangeBasedForLoopColon: true
+---

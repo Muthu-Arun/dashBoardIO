@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 project(MyImGuiApp)
 
 set(CMAKE_CXX_STANDARD 20)
-
+# add_compile_options(-Wall -Wextra -Wpedantic -Werror)
+add_compile_options(-Wall -Wextra )
 # 1. Find system dependencies (GLFW and OpenGL)
 find_package(glfw3 REQUIRED)
 find_package(OpenGL REQUIRED)
