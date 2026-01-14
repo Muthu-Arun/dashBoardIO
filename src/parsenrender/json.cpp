@@ -6,7 +6,7 @@
 namespace ParseJson {
 HttpWindowWrapper::HttpWindowWrapper() {
     win_idx = window_count++;
-    win_label = std::format("Window - {}", win_idx++);
+    win_label = std::format("Window - {}", win_idx);
     host_endpoint.resize(200, ' ');
     host.resize(200, ' ');
 }
