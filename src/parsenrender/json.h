@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -15,11 +16,15 @@ protected:
     std::unordered_map<std::string, std::shared_ptr<int>> map_int;
     std::unordered_map<std::string, std::shared_ptr<float>> map_float;
     std::unordered_map<std::string, std::shared_ptr<std::string>> map_string;
-    std::string host_endpoint;
+    std::string host, host_endpoint; 
 
 public:
-    void renderHeader();
+    static uint32_t window_count;
+    uint32_t win_idx;
+    std::string win_label;
+    HttpWindowWrapper();
     std::optional<HttpPoll::Poll> poll;
     std::optional<Window::Window> window;
+    void renderHeader();
 };
 }  // namespace ParseJson
