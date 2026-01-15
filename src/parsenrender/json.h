@@ -11,12 +11,11 @@ namespace ParseJson {
 
 class HttpWindowWrapper {
 protected:
-    std::unordered_map<std::string, std::unique_ptr<Widgets::Widget>> widgets;
-
     std::unordered_map<std::string, std::shared_ptr<int>> map_int;
     std::unordered_map<std::string, std::shared_ptr<float>> map_float;
     std::unordered_map<std::string, std::shared_ptr<std::string>> map_string;
     std::string host, host_endpoint; 
+    bool in_init_phase = 0;
 
 public:
     static uint32_t window_count;
@@ -26,5 +25,6 @@ public:
     std::optional<HttpPoll::Poll> poll;
     std::optional<Window::Window> window;
     void renderHeader();
+    void parseJSON();
 };
 }  // namespace ParseJson

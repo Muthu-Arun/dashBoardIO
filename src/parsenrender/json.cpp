@@ -9,13 +9,22 @@ HttpWindowWrapper::HttpWindowWrapper() {
     win_label = std::format("Window - {}", win_idx);
     host_endpoint.resize(200, ' ');
     host.resize(200, ' ');
+    window.emplace(win_label);
 }
+void HttpWindowWrapper::parseJSON() {}
+
 void HttpWindowWrapper::renderHeader() {
     ImGui::Begin(win_label.c_str());
-    if (ImGui::InputText("Host URL", host_endpoint.data(), host_endpoint.length())) {
-        poll.emplace(host, host_endpoint);
-        // Probably logic to add widgets
+    if (in_init_phase) {
+        if (ImGui::InputText("Host URL", host_endpoint.data(), host_endpoint.capacity() + 1,
+                             ImGuiInputTextFlags_EnterReturnsTrue)) {
+            poll.emplace(host, host_endpoint);
+            in_init_phase = false;
+        }
+    } else [[likely]] {
+        window->render();
     }
+    ImGui::End();
 }
 
 }  // namespace ParseJson
