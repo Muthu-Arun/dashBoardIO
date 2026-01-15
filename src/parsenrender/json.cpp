@@ -4,6 +4,7 @@
 
 #include "imgui.h"
 namespace ParseJson {
+uint32_t HttpWindowWrapper::window_count = 0;
 HttpWindowWrapper::HttpWindowWrapper() {
     win_idx = window_count++;
     win_label = std::format("Window - {}", win_idx);
@@ -11,7 +12,9 @@ HttpWindowWrapper::HttpWindowWrapper() {
     host.resize(200, ' ');
     window.emplace(win_label);
 }
-void HttpWindowWrapper::parseJSON() {}
+void HttpWindowWrapper::parseJSON() {
+
+}
 
 void HttpWindowWrapper::renderHeader() {
     ImGui::Begin(win_label.c_str());

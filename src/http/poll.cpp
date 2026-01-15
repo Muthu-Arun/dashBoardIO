@@ -70,7 +70,8 @@ Poll::Poll(std::string_view remote_url, std::string_view endpoint, uint16_t port
         client->sendRequest(request,
                             [this](drogon::ReqResult result, const HttpResponsePtr& response) {
                                 std::lock_guard<std::mutex> _lock(res_body_mtx);
-                                response_body.emplace<std::string>(response->body());
+                                // response_body.emplace<std::string>(response->body());
+                                json_ptr = response->getJsonObject();
                                 is_new_data_available.store(true);
                             });
     });
@@ -79,4 +80,7 @@ Poll::~Poll() {
     drogon::app().getLoop()->invalidateTimer(timer_id);  // Stops the Polling task
 }
 
+std::shared_ptr<Json::Value> Poll::getJSONBodyPtr() noexcept {
+    return json_ptr;
+}
 }  // namespace HttpPoll

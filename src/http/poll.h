@@ -32,6 +32,7 @@ void add_timed_event();
 class Poll {
 protected:
   std::variant<std::string, Json::Value> response_body;
+  std::shared_ptr<Json::Value> json_ptr;
   mutable std::mutex res_body_mtx;
   trantor::TimerId timer_id;
   std::atomic<bool> is_new_data_available = 0;
@@ -43,6 +44,7 @@ protected:
 public:
   Poll(std::string_view remote_url, std::string_view endpoint, uint16_t port = 80);
   bool is_data_available() const noexcept;
+  std::shared_ptr<Json::Value> getJSONBodyPtr() noexcept;
   std::pair<const std::variant<std::string, Json::Value>&, std::mutex&> getBody() const noexcept;
   ~Poll();
 
