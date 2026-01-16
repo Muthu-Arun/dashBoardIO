@@ -1,5 +1,7 @@
 #pragma once
+#include <functional>
 #include <memory>
+#include <string>
 #include <string_view>
 #include <unordered_map>
 
@@ -14,7 +16,8 @@ public:
     Window(const Window&) = delete;
     Window(Window&&) = delete;
     void render();
-    void addWidget(const std::string_view id, std::unique_ptr<Widgets::Widget> widget);
+    void addWidget(std::string_view id, std::unique_ptr<Widgets::Widget> widget);
+    void updateWidget(const std::string& id, std::unique_ptr<Widgets::Widget> widget);
     void removeWidget(const std::string& id);
 };
 }  // namespace Window

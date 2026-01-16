@@ -1,6 +1,8 @@
 #include "window.h"
 
+#include <algorithm>
 #include <memory>
+#include <string>
 #include <string_view>
 
 namespace Window {
@@ -14,6 +16,10 @@ void Window::render() {
 
 void Window::addWidget(const std::string_view id, std::unique_ptr<Widgets::Widget> widget) {
     widgets.emplace(id, std::move(widget));
+}
+
+void Window::updateWidget(const std::string& id, std::unique_ptr<Widgets::Widget> widget) {
+    widgets[id] = std::move(widget);
 }
 
 void Window::removeWidget(const std::string& id) {
