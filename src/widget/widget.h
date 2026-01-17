@@ -33,13 +33,13 @@ template <typename _data_type>
 class Plot : public Widget {
 public:
     enum class type : uint8_t { LINES, HISTOGRAM };
-    std::shared_ptr<_data_type> src;
+    const _data_type& src;
     std::mutex& src_mtx;
     type ptype;
     size_t buffer_max_limit = 16384;  // 2^14
     std::vector<_data_type> data = std::vector<_data_type>(buffer_max_limit, 0);
 
-    Plot(std::string_view _label, type _ptype, std::shared_ptr<_data_type>& _data_source,
+    Plot(std::string_view _label, type _ptype, const _data_type& _data_source,
          std::mutex& src_mtx)
         : Widget(_label), ptype(_ptype), src(_data_source), src_mtx(src_mtx) {}
 
@@ -58,6 +58,8 @@ public:
         if (is_data_available.load()) {
             is_being_copied.store(true);
             std::lock_guard<std::mutex> lock(src_mtx);
+            pushData();
+            is_being_copied.store(false);
         }
     }
     ~Plot() {}
@@ -65,7 +67,7 @@ public:
 private:
     size_t head = 0;
     void pushData() {
-        data[head] = *src;
+        data[head] = src;
         head = (head + 1) & (buffer_max_limit - 1);
     }
 };
@@ -91,19 +93,19 @@ public:
 template <typename _data_type = std::string>
 class Text : public Widget {
 public:
-    _data_type data = std::string("hello");
+    _data_type data;
 
-    std::shared_ptr<_data_type> src;
+    const _data_type& src;
     std::mutex& src_mtx;
 
-    Text(std::string_view _label, std::shared_ptr<_data_type>& src, std::mutex& src_mtx)
+    Text(std::string_view _label, const _data_type& src, std::mutex& src_mtx)
         : Widget(_label), src(src), src_mtx(src_mtx) {}
     void draw() override { ImGui::Text("%s", data.c_str()); }
     void copyFromSource() override {
         if (is_data_available.load()) {
             is_being_copied.store(true);
             std::lock_guard<std::mutex> lock(src_mtx);
-            data = *src;
+            data = src;
             is_data_available.store(false);
             is_being_copied.store(false);
         }
@@ -124,13 +126,13 @@ protected:
 
 public:
     std::array<_data_type, 2> range;
-    std::shared_ptr<_data_type> src;
+    const _data_type& src;
     std::mutex& src_mtx;
     _data_type data;
     Coordinates coordinates;
 
     RadialGauge(std::string_view _label, _data_type min, _data_type max,
-                std::shared_ptr<_data_type>& src, std::mutex& src_mtx,
+                const _data_type& src, std::mutex& src_mtx,
                 Coordinates coordn = {200.0f, 200.0f / 2.0f, 3.14159f * 0.75f, 3.14159f * 2.25f})
         : Widget(_label), range{min, max}, src(src), src_mtx(src_mtx), coordinates(coordn) {}
 
@@ -161,7 +163,7 @@ public:
         if (is_data_available.load()) {
             is_being_copied.store(true);
             std::lock_guard<std::mutex> lock(src_mtx);
-            data = *src;
+            data = src;
             is_data_available.store(false);
             is_being_copied.store(false);
         }
@@ -170,12 +172,12 @@ public:
 };
 class TextInput : public Widget {
 public:
-    std::shared_ptr<std::string> src;
+    const std::string& src;
     std::mutex& src_mtx;
     size_t string_capacity;  // Declare before string, using memb init list
     std::string data;
 
-    TextInput(std::string_view label, std::shared_ptr<std::string>& src, std::mutex& src_mtx,
+    TextInput(std::string_view label, const std::string& src, std::mutex& src_mtx,
               size_t string_capacity = 1024);
     ~TextInput();
     void draw() override;
