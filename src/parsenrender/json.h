@@ -1,8 +1,10 @@
 #include <cstdint>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <string>
 #include <unordered_map>
+#include <vector>
 #include "poll.h"
 
 #include "widget.h"
@@ -11,9 +13,10 @@ namespace ParseJson {
 
 class HttpWindowWrapper {
 protected:
-    std::unordered_map<std::string, std::shared_ptr<int>> map_int;
-    std::unordered_map<std::string, std::shared_ptr<float>> map_float;
-    std::unordered_map<std::string, std::shared_ptr<std::string>> map_string;
+    std::unordered_map<std::string, int> map_int;
+    std::unordered_map<std::string, float> map_float;
+    std::unordered_map<std::string, std::string> map_string;
+    std::unordered_map<std::string, std::mutex> network_buffer_mtx;
     std::string host, host_endpoint; 
     bool in_init_phase = 0;
 
@@ -24,6 +27,9 @@ public:
     HttpWindowWrapper();
     std::optional<HttpPoll::Poll> poll;
     std::optional<Window::Window> window;
+    void addText(const std::string& _label, std::string_view data);
+    void addRadialGauge();
+    void addPlot();
     void renderHeader();
     void parseJSON();
 };

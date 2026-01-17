@@ -3,19 +3,17 @@
 #include <json/value.h>
 
 #include <format>
+#include <memory>
+#include <mutex>
+#include <string>
 #include <string_view>
 #include <vector>
 
 #include "imgui.h"
+#include "widget.h"
 #include "window.h"
 namespace ParseJson {
-enum class WidgetType :uint16_t {
-    Unknown,
-    Plot,
-    Histogram,
-    Text,
-    Image
-};
+enum class WidgetType : uint16_t { Unknown, Plot, Histogram, Text, Image };
 /*
 void parseDynamicJson(const Json::Value& root) {
     if (root.isObject()) {
@@ -46,17 +44,19 @@ JSON Structure
 }
 */
 
-static void addTextWidget(Window::Window& window, std::string_view label_, ){
-    window.addWidget(std::string_view id, std::unique_ptr<Widgets::Widget> widget)
+void HttpWindowWrapper::addText(const std::string& _label, std::string_view data){
+    map_string[_label] = data; // IG using [] oprator is not a problem here as if there aren't any we need to create one
+    network_buffer_mtx[_label];
+    window->addWidget(_label, std::make_unique<Widgets::Text<>>(_label, map_string[_label], network_buffer_mtx[_label]));
+
 }
 
-static void parseDynamicJson(const Json::Value& root) {
+void parseDynamicJson(const Json::Value& root) {
     if (root.isArray()) {
-    
     }
     if (root.isObject()) {
         // It's a map/dictionary: { "key": "value" }
-        for (auto const& id : root.getMemberNames()) {
+        for (std::string& id : root.getMemberNames()) {
             std::cout << "Key: " << id << " -> ";
             parseDynamicJson(root[id]);  // Recurse!
         }
@@ -68,7 +68,6 @@ static void parseDynamicJson(const Json::Value& root) {
     } else {
         // It's a "leaf" (Value): string, int, bool
         std::cout << "Value: " << root.asString() << std::endl;
-
     }
 }
 uint32_t HttpWindowWrapper::window_count = 0;
