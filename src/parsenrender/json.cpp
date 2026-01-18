@@ -7,6 +7,7 @@
 #include <mutex>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "imgui.h"
@@ -44,11 +45,32 @@ JSON Structure
 }
 */
 
-void HttpWindowWrapper::addText(const std::string& _label, std::string_view data){
-    map_string[_label] = data; // IG using [] oprator is not a problem here as if there aren't any we need to create one
+void HttpWindowWrapper::addText(const std::string& _label, std::string_view data) {
+    map_string[_label] = data;  // IG using [] oprator is not a problem here as if there aren't any
+                                // we need to create one
     network_buffer_mtx[_label];
-    window->addWidget(_label, std::make_unique<Widgets::Text<>>(_label, map_string[_label], network_buffer_mtx[_label]));
-
+    window->addWidget(_label, std::make_unique<Widgets::Text<>>(_label, map_string[_label],
+                                                                network_buffer_mtx[_label]));
+}
+void HttpWindowWrapper::addRadialGauge(const std::string& _label, int data, int min, int max) {
+    map_int[_label] = data;
+    network_buffer_mtx[_label];
+    window->addWidget(
+        _label, std::make_unique<Widgets::RadialGauge<int>>(_label, min, max, map_int.at(_label),
+                                                            network_buffer_mtx[_label]));
+}
+void HttpWindowWrapper::addRadialGauge(const std::string& _label, float data, float min,
+                                       float max) {
+    map_float[_label] = data;
+    network_buffer_mtx[_label];
+    window->addWidget(
+        _label, std::make_unique<Widgets::RadialGauge<int>>(_label, min, max, map_float.at(_label),
+                                                            network_buffer_mtx[_label]));
+}
+void HttpWindowWrapper::addPlot(const std::string& _label, float data) {
+    map_float[_label] = data;
+    network_buffer_mtx[_label];
+    window->addWidget(_label, std::make_unique<Widgets::Plot<float>>(_label, Widgets::Plot<float>::type::Line,map_float[_label], network_buffer_mtx[_label]));
 }
 
 void parseDynamicJson(const Json::Value& root) {

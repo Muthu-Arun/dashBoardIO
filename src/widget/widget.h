@@ -32,7 +32,7 @@ template <typename _data_type>
     requires /*std::integral<_data_type> || */ std::floating_point<_data_type>
 class Plot : public Widget {
 public:
-    enum class type : uint8_t { LINES, HISTOGRAM };
+    enum class type : uint8_t { Line, Histogram };
     const _data_type& src;
     std::mutex& src_mtx;
     type ptype;
@@ -45,10 +45,10 @@ public:
 
     void draw() override {
         switch (ptype) {
-            case type::LINES:
+            case type::Line:
                 ImGui::PlotLines(label.c_str(), data.data(), buffer_max_limit, head);
                 break;
-            case type::HISTOGRAM:
+            case type::Histogram:
                 ImGui::PlotHistogram(label.c_str(), data.data(), buffer_max_limit, head);
                 break;
         }
