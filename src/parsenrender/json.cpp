@@ -108,10 +108,10 @@ void HttpWindowWrapper::initFRs() {
     widget_updates_fr["text"] = [this](const std::string& id, const Json::Value& params) {
         if (!window->isWidgetPresent(id)) {
             addText(id, params["data"].asString());
-        }
-        else {
+        } else [[likely]] {
             std::lock_guard<std::mutex> lock_(network_buffer_mtx[id]);
             map_string[id] = params["data"].asString();
+            window->widgets.at(id)->is_being_copied.store(true);
         }
     };
 }
