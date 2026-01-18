@@ -22,6 +22,9 @@ void Window::updateWidget(const std::string& id, std::unique_ptr<Widgets::Widget
     widgets[id] = std::move(widget);
 }
 
+bool Window::isWidgetPresent(const std::string& id){
+    return widgets.find(id) != widgets.end();
+}
 void Window::removeWidget(const std::string& id) {
     widgets.erase(id);
 }

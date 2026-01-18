@@ -14,7 +14,7 @@
 #include "widget.h"
 #include "window.h"
 namespace ParseJson {
-enum class WidgetType : uint16_t { Unknown, Plot, Histogram, Text, Image };
+enum class WidgetType : uint16_t { Unknown, Plot, Histogram, Text, Image, RadialGauge };
 /*
 void parseDynamicJson(const Json::Value& root) {
     if (root.isObject()) {
@@ -67,10 +67,12 @@ void HttpWindowWrapper::addRadialGauge(const std::string& _label, float data, fl
         _label, std::make_unique<Widgets::RadialGauge<int>>(_label, min, max, map_float.at(_label),
                                                             network_buffer_mtx[_label]));
 }
-void HttpWindowWrapper::addPlot(const std::string& _label, float data) {
+void HttpWindowWrapper::addPlot(const std::string& _label, float data,
+                                Widgets::Plot<float>::type ptype) {
     map_float[_label] = data;
     network_buffer_mtx[_label];
-    window->addWidget(_label, std::make_unique<Widgets::Plot<float>>(_label, Widgets::Plot<float>::type::Line,map_float[_label], network_buffer_mtx[_label]));
+    window->addWidget(_label, std::make_unique<Widgets::Plot<float>>(
+                                  _label, ptype, map_float[_label], network_buffer_mtx[_label]));
 }
 
 void parseDynamicJson(const Json::Value& root) {
@@ -92,6 +94,7 @@ void parseDynamicJson(const Json::Value& root) {
         std::cout << "Value: " << root.asString() << std::endl;
     }
 }
+
 uint32_t HttpWindowWrapper::window_count = 0;
 
 HttpWindowWrapper::HttpWindowWrapper() {
@@ -101,9 +104,23 @@ HttpWindowWrapper::HttpWindowWrapper() {
     host.resize(200, ' ');
     window.emplace(win_label);
 }
+void HttpWindowWrapper::initFRs() {
+    widget_updates_fr["text"] = [this](const std::string& id, const Json::Value& params) {
+        if (!window->isWidgetPresent(id)) {
+            addText(id, params["data"].asString());
+        }
+        else {
+            std::lock_guard<std::mutex> lock_(network_buffer_mtx[id]);
+            map_string[id] = params["data"].asString();
+        }
+    };
+}
 void HttpWindowWrapper::parseJSON() {
     auto jsonptr = poll->getJSONBodyPtr();
     const Json::Value& json = *jsonptr;
+    for (std::string& id : json.getMemberNames()) {
+        widget_updates_fr[json[id]["type"].asString()];
+    }
 }
 
 void HttpWindowWrapper::renderHeader() {

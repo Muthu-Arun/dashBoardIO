@@ -18,6 +18,7 @@ public:
     void render();
     void addWidget(std::string_view id, std::unique_ptr<Widgets::Widget> widget);
     void updateWidget(const std::string& id, std::unique_ptr<Widgets::Widget> widget);
+    bool isWidgetPresent(const std::string& id);
     void removeWidget(const std::string& id);
 };
 }  // namespace Window
