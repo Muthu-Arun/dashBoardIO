@@ -124,8 +124,8 @@ void HttpWindowWrapper::initFRs() {
                 addRadialGauge(label_, params["data"].asFloat(), params["min"].asFloat(),
                                params["max"].asFloat());
             }
-        }else [[likely]] {
-            if(map_int.find(label_) != map_int.end()){
+        } else [[likely]] {
+            if (map_int.find(label_) != map_int.end()) {
                 std::lock_guard<std::mutex> lock_(network_buffer_mtx[label_]);
                 map_int[label_] = params["data"].asInt();
                 window->widgets.at(label_)->is_data_available.store(true);
@@ -133,9 +133,16 @@ void HttpWindowWrapper::initFRs() {
                 std::lock_guard<std::mutex> lock_(network_buffer_mtx[label_]);
                 map_float[label_] = params["data"].asFloat();
                 window->widgets.at(label_)->is_data_available.store(true);
-            
             }
-            
+        }
+    };
+    widget_updates_fr["plot"] = [this](const std::string& label_, const Json::Value& params) {
+        if (!window->isWidgetPresent(label_)) {
+            addPlot(label_, params["data"].asFloat());
+        } else [[likely]] {
+            std::lock_guard<std::mutex> lock_(network_buffer_mtx[label_]);
+            map_float[label_] = params["data"].asFloat();
+            window->widgets.at(label_)->is_data_available.store(true);
         }
     };
 }
@@ -143,7 +150,7 @@ void HttpWindowWrapper::parseJSON() {
     auto jsonptr = poll->getJSONBodyPtr();
     const Json::Value& json = *jsonptr;
     for (std::string& id : json.getMemberNames()) {
-        widget_updates_fr[json[id]["type"].asString()];
+        widget_updates_fr.at(json[id]["type"].asString())(id, json[id]);
     }
 }
 
