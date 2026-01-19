@@ -105,13 +105,37 @@ HttpWindowWrapper::HttpWindowWrapper() {
     window.emplace(win_label);
 }
 void HttpWindowWrapper::initFRs() {
-    widget_updates_fr["text"] = [this](const std::string& id, const Json::Value& params) {
-        if (!window->isWidgetPresent(id)) {
-            addText(id, params["data"].asString());
+    widget_updates_fr["text"] = [this](const std::string& label_, const Json::Value& params) {
+        if (!window->isWidgetPresent(label_)) {
+            addText(label_, params["data"].asString());
         } else [[likely]] {
-            std::lock_guard<std::mutex> lock_(network_buffer_mtx[id]);
-            map_string[id] = params["data"].asString();
-            window->widgets.at(id)->is_being_copied.store(true);
+            std::lock_guard<std::mutex> lock_(network_buffer_mtx[label_]);
+            map_string[label_] = params["data"].asString();
+            window->widgets.at(label_)->is_data_available.store(true);
+        }
+    };
+    widget_updates_fr["radial_gauge"] = [this](const std::string& label_,
+                                               const Json::Value& params) {
+        if (!window->isWidgetPresent(label_)) {
+            if (params["dtype"].asString() == "int") {
+                addRadialGauge(label_, params["data"].asInt(), params["min"].asInt(),
+                               params["max"].asInt());
+            } else {
+                addRadialGauge(label_, params["data"].asFloat(), params["min"].asFloat(),
+                               params["max"].asFloat());
+            }
+        }else [[likely]] {
+            if(map_int.find(label_) != map_int.end()){
+                std::lock_guard<std::mutex> lock_(network_buffer_mtx[label_]);
+                map_int[label_] = params["data"].asInt();
+                window->widgets.at(label_)->is_data_available.store(true);
+            } else {
+                std::lock_guard<std::mutex> lock_(network_buffer_mtx[label_]);
+                map_float[label_] = params["data"].asFloat();
+                window->widgets.at(label_)->is_data_available.store(true);
+            
+            }
+            
         }
     };
 }
