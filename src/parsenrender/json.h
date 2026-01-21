@@ -1,3 +1,4 @@
+#pragma once
 #include <json/value.h>
 #include <cstdint>
 #include <memory>
@@ -20,7 +21,7 @@ protected:
     std::unordered_map<std::string, std::mutex> network_buffer_mtx;
     std::unordered_map<std::string, std::function<void(const std::string& id, const Json::Value&)>> widget_updates_fr;
     std::string host, host_endpoint;
-    bool in_init_phase = 0;
+    bool in_init_phase = 1;
 
 public:
     static uint32_t window_count;

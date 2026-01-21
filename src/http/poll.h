@@ -1,3 +1,4 @@
+#pragma once
 #include <drogon/HttpClient.h>
 #include <drogon/HttpRequest.h>
 #include <json/value.h>

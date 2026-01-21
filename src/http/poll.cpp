@@ -7,6 +7,7 @@
 
 #include <chrono>
 #include <cstdint>
+#include <iostream>
 #include <mutex>
 #include <string_view>
 #include <thread>
@@ -69,6 +70,10 @@ Poll::Poll(std::string_view remote_url, std::string_view endpoint, uint16_t port
     timer_id = drogon::app().getLoop()->runEvery(std::chrono::milliseconds(100), [this]() {
         client->sendRequest(request,
                             [this](drogon::ReqResult result, const HttpResponsePtr& response) {
+                                if (result != drogon::ReqResult::Ok) {
+                                    std::cerr << "request Failed\n";
+                                    return;
+                                }
                                 std::lock_guard<std::mutex> _lock(res_body_mtx);
                                 // response_body.emplace<std::string>(response->body());
                                 json_ptr = response->getJsonObject();

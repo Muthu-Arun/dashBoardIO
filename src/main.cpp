@@ -8,8 +8,7 @@
 #include <stdio.h>
 #include <utility>
 #include "poll.h"
-#include "widget.h"
-#include "window.h"
+#include "json.h"
 int main(int, char**)
 {
     // 1. Setup GLFW
@@ -41,6 +40,8 @@ int main(int, char**)
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
+    ParseJson::HttpWindowWrapper win;
+    win.initFRs();
     // Window::window win("hello");
     // win.addWidget("win1", std::make_unique<Widget::text<>>("sample"));
     // 3. Main loop
@@ -53,6 +54,7 @@ int main(int, char**)
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
         // win.render();
+        win.renderHeader();
 
         // ImGui::Begin("Hello, Linux!");
         // ImGui::Text("%s", text.c_str());
