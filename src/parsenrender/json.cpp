@@ -101,6 +101,8 @@ HttpWindowWrapper::HttpWindowWrapper() {
     win_idx = window_count++;
     win_label = std::format("Window - {}", win_idx);
     window.emplace(win_label);
+    host.fill('\0');
+    host_endpoint.fill('\0');
 }
 void HttpWindowWrapper::initFRs() {
     widget_updates_fr["text"] = [this](const std::string& label_, const Json::Value& params) {
