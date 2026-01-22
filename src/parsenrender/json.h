@@ -1,5 +1,6 @@
 #pragma once
 #include <json/value.h>
+#include <array>
 #include <cstdint>
 #include <memory>
 #include <mutex>
@@ -20,7 +21,8 @@ protected:
     std::unordered_map<std::string, std::string> map_string;
     std::unordered_map<std::string, std::mutex> network_buffer_mtx;
     std::unordered_map<std::string, std::function<void(const std::string& id, const Json::Value&)>> widget_updates_fr;
-    std::string host, host_endpoint;
+    std::array<char, 250> host, host_endpoint;
+    uint64_t port = 80;
     bool in_init_phase = 1;
 
 public:

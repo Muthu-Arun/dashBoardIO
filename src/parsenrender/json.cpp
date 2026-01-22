@@ -100,8 +100,6 @@ uint32_t HttpWindowWrapper::window_count = 0;
 HttpWindowWrapper::HttpWindowWrapper() {
     win_idx = window_count++;
     win_label = std::format("Window - {}", win_idx);
-    host_endpoint.resize(200, ' ');
-    host.resize(200, ' ');
     window.emplace(win_label);
 }
 void HttpWindowWrapper::initFRs() {
@@ -157,9 +155,12 @@ void HttpWindowWrapper::parseJSON() {
 void HttpWindowWrapper::renderHeader() {
     ImGui::Begin(win_label.c_str());
     if (in_init_phase) [[unlikely]] {
-        if (ImGui::InputText("Host URL", host_endpoint.data(), 250,
-                             ImGuiInputTextFlags_EnterReturnsTrue)) {
-            poll.emplace("127.0.0.1", "/api", 8080);
+        ImGui::InputText("Host URL", host.data(), 250, ImGuiInputTextFlags_EnterReturnsTrue);
+        ImGui::InputText("Host Endpoint", host_endpoint.data(), 250,
+                         ImGuiInputTextFlags_EnterReturnsTrue);
+        ImGui::InputScalar("Port", ImGuiDataType_U64, &port);
+        if (ImGui::Button("Enter Host URL")) {
+            poll.emplace(host.data(), host_endpoint.data(), port);
             in_init_phase = false;
             ImGui::End();
             return;

@@ -45,7 +45,7 @@ protected:
 public:
     Poll(std::string_view remote_url, std::string_view endpoint, uint16_t port = 80);
     bool is_data_available() const noexcept;
-    std::shared_ptr<Json::Value> getJSONBodyPtr() noexcept;
+    std::shared_ptr<Json::Value>& getJSONBodyPtr() noexcept;
     std::pair<const std::variant<std::string, Json::Value>&, std::mutex&> getBody() const noexcept;
     ~Poll();
 

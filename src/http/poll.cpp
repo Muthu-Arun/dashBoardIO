@@ -85,7 +85,7 @@ Poll::~Poll() {
     drogon::app().getLoop()->invalidateTimer(timer_id);  // Stops the Polling task
 }
 
-std::shared_ptr<Json::Value> Poll::getJSONBodyPtr() noexcept {
+std::shared_ptr<Json::Value>& Poll::getJSONBodyPtr() noexcept {
     return json_ptr;
 }
 }  // namespace HttpPoll
