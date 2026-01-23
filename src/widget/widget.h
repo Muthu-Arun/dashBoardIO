@@ -95,7 +95,10 @@ public:
 
     Text(std::string_view _label, const _data_type& src, std::mutex& src_mtx)
         : Widget(_label), src(src), src_mtx(src_mtx) {}
-    void draw() override { ImGui::Text("%s", data.c_str()); }
+    void draw() override {
+        copyFromSource();
+        ImGui::Text("%s", data.c_str());
+    }
     void copyFromSource() {
         if (is_data_available.load()) {
             std::lock_guard<std::mutex> lock(src_mtx);
