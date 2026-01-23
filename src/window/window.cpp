@@ -9,7 +9,6 @@ namespace Window {
 Window::Window(std::string_view label) : label(label) {}
 void Window::render() {
     for (auto&[_, widget]: widgets) {
-        widget->copyFromSource();
         widget->draw();
     }
 }

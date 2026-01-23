@@ -54,25 +54,22 @@ void HttpWindowWrapper::addText(const std::string& _label, std::string_view data
 }
 void HttpWindowWrapper::addRadialGauge(const std::string& _label, int data, int min, int max) {
     map_int[_label] = data;
-    network_buffer_mtx[_label];
     window->addWidget(
-        _label, std::make_unique<Widgets::RadialGauge<int>>(_label, min, max, map_int.at(_label),
-                                                            network_buffer_mtx[_label]));
+        _label, std::make_unique<Widgets::RadialGauge<int>>(_label, min, max, map_int.at(_label)));
 }
 void HttpWindowWrapper::addRadialGauge(const std::string& _label, float data, float min,
                                        float max) {
     map_float[_label] = data;
     network_buffer_mtx[_label];
-    window->addWidget(
-        _label, std::make_unique<Widgets::RadialGauge<int>>(_label, min, max, map_float.at(_label),
-                                                            network_buffer_mtx[_label]));
+    window->addWidget(_label, std::make_unique<Widgets::RadialGauge<float>>(_label, min, max,
+                                                                            map_float.at(_label)));
 }
 void HttpWindowWrapper::addPlot(const std::string& _label, float data,
                                 Widgets::Plot<float>::type ptype) {
     map_float[_label] = data;
     network_buffer_mtx[_label];
     window->addWidget(_label, std::make_unique<Widgets::Plot<float>>(
-                                  _label, ptype, map_float[_label], network_buffer_mtx[_label]));
+                                  _label, ptype, map_float[_label]));
 }
 
 void parseDynamicJson(const Json::Value& root) {

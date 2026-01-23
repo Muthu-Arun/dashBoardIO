@@ -20,12 +20,11 @@ class Widget {
 public:
     std::string label;
     // std::mutex data_mtx;
-    std::atomic<bool> is_being_copied = 0;
     std::atomic<bool> is_data_available = 0;
     Widget(std::string_view _label);
     virtual void draw() = 0;
     // virtual void action();
-    virtual void copyFromSource() = 0;
+    // virtual void copyFromSource() = 0;
     virtual ~Widget();
 };
 template <typename _data_type>
@@ -33,17 +32,16 @@ template <typename _data_type>
 class Plot : public Widget {
 public:
     enum class type : uint8_t { Line, Histogram };
-    const _data_type& src;
-    std::mutex& src_mtx;
+    std::atomic<_data_type>& src;
     type ptype;
     size_t buffer_max_limit = 16384;  // 2^14
     std::vector<_data_type> data = std::vector<_data_type>(buffer_max_limit, 0);
 
-    Plot(std::string_view _label, type _ptype, const _data_type& _data_source,
-         std::mutex& src_mtx)
-        : Widget(_label), ptype(_ptype), src(_data_source), src_mtx(src_mtx) {}
+    Plot(std::string_view _label, type _ptype, std::atomic<_data_type>& _src)
+        : Widget(_label), ptype(_ptype), src(_src) {}
 
     void draw() override {
+        copyFromSource();
         switch (ptype) {
             case type::Line:
                 ImGui::PlotLines(label.c_str(), data.data(), buffer_max_limit, head);
@@ -54,12 +52,9 @@ public:
         }
     }
 
-    void copyFromSource() override {
+    void copyFromSource() {
         if (is_data_available.load()) {
-            is_being_copied.store(true);
-            std::lock_guard<std::mutex> lock(src_mtx);
             pushData();
-            is_being_copied.store(false);
         }
     }
     ~Plot() {}
@@ -67,7 +62,7 @@ public:
 private:
     size_t head = 0;
     void pushData() {
-        data[head] = src;
+        data[head] = src.load();
         head = (head + 1) & (buffer_max_limit - 1);
     }
 };
@@ -101,13 +96,11 @@ public:
     Text(std::string_view _label, const _data_type& src, std::mutex& src_mtx)
         : Widget(_label), src(src), src_mtx(src_mtx) {}
     void draw() override { ImGui::Text("%s", data.c_str()); }
-    void copyFromSource() override {
+    void copyFromSource() {
         if (is_data_available.load()) {
-            is_being_copied.store(true);
             std::lock_guard<std::mutex> lock(src_mtx);
             data = src;
             is_data_available.store(false);
-            is_being_copied.store(false);
         }
     }
     ~Text() {}
@@ -126,15 +119,13 @@ protected:
 
 public:
     std::array<_data_type, 2> range;
-    const _data_type& src;
-    std::mutex& src_mtx;
-    _data_type data;
+    std::atomic<_data_type>& data;
     Coordinates coordinates;
 
     RadialGauge(std::string_view _label, _data_type min, _data_type max,
-                const _data_type& src, std::mutex& src_mtx,
+                std::atomic<_data_type>& _data,
                 Coordinates coordn = {200.0f, 200.0f / 2.0f, 3.14159f * 0.75f, 3.14159f * 2.25f})
-        : Widget(_label), range{min, max}, src(src), src_mtx(src_mtx), coordinates(coordn) {}
+        : Widget(_label), range{min, max}, data(_data), coordinates(coordn) {}
 
     void draw() override {
         // INIT
@@ -151,23 +142,15 @@ public:
                              32);  // 32 segments for smoothness
         draw_list->PathStroke(ImGui::GetColorU32(ImGuiCol_FrameBg), 0,
                               10.0f);  // 10px thickness
-        float current_angle = coordinates.start_angle +
-                              (coordinates.end_angle - coordinates.start_angle) * (data / range[1]);
+        float current_angle =
+            coordinates.start_angle +
+            (coordinates.end_angle - coordinates.start_angle) * (data.load() / range[1]);
 
         draw_list->PathArcTo(center, coordinates.radius, coordinates.start_angle, current_angle,
                              32);
         draw_list->PathStroke(ImGui::GetColorU32(ImGuiCol_PlotHistogram), 0, 10.0f);
     }
 
-    void copyFromSource() override {
-        if (is_data_available.load()) {
-            is_being_copied.store(true);
-            std::lock_guard<std::mutex> lock(src_mtx);
-            data = src;
-            is_data_available.store(false);
-            is_being_copied.store(false);
-        }
-    }
     ~RadialGauge() {}
 };
 class TextInput : public Widget {
@@ -181,6 +164,6 @@ public:
               size_t string_capacity = 1024);
     ~TextInput();
     void draw() override;
-    void copyFromSource() override;
+    void copyFromSource();
 };
 }  // namespace Widgets

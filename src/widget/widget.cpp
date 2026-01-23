@@ -21,15 +21,14 @@ TextInput::TextInput(std::string_view label, const std::string& src, std::mutex&
       data(string_capacity, ' ') {}
 TextInput::~TextInput() {}
 void TextInput::draw() {
+    copyFromSource();
     ImGui::InputText(label.c_str(), data.data(), string_capacity);
 }
 void TextInput::copyFromSource() {
     if (is_data_available.load()) {
-        is_being_copied.store(true);
         std::lock_guard<std::mutex> lock(src_mtx);
         data = src;
         is_data_available.store(false);
-        is_being_copied.store(false);
     }
 }
 }  // namespace Widgets

@@ -1,6 +1,8 @@
 #pragma once
 #include <json/value.h>
 #include <array>
+#include <atomic>
+#include <cmath>
 #include <cstdint>
 #include <memory>
 #include <mutex>
@@ -16,8 +18,8 @@ namespace ParseJson {
 
 class HttpWindowWrapper {
 protected:
-    std::unordered_map<std::string, int> map_int;
-    std::unordered_map<std::string, float> map_float;
+    std::unordered_map<std::string, std::atomic<int>> map_int;
+    std::unordered_map<std::string, std::atomic<float>> map_float;
     std::unordered_map<std::string, std::string> map_string;
     std::unordered_map<std::string, std::mutex> network_buffer_mtx;
     std::unordered_map<std::string, std::function<void(const std::string& id, const Json::Value&)>> widget_updates_fr;
