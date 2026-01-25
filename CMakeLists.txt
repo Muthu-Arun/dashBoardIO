@@ -12,6 +12,7 @@ find_package(Drogon REQUIRED)
 # We need the core files AND the specific backends for GLFW and OpenGL3
 set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/imgui)
 set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
+set(VENDOR_DIR ${CMAKE_SOURCE_DIR}/vendor)
 
 set(IMGUI_SOURCES
     ${IMGUI_DIR}/imgui.cpp
@@ -22,6 +23,10 @@ set(IMGUI_SOURCES
     ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
     ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
 )
+set(IM_PLOT_SOURCES
+    ${VENDOR_DIR}/implot/implot_items.cpp
+    ${VENDOR_DIR}/implot/implot.cpp
+)
 set(HTTP_SOURCES
     src/http/poll.cpp)
 set(WIDGET_SOURCES
@@ -31,7 +36,7 @@ set(WINDOW_SOURCES
 set(PARSING_SOURCES
     src/parsenrender/json.cpp)
 # 3. Create the Executable
-add_executable(app src/main.cpp ${IMGUI_SOURCES} ${HTTP_SOURCES} ${WIDGET_SOURCES} ${WINDOW_SOURCES} ${PARSING_SOURCES})
+add_executable(app src/main.cpp ${IMGUI_SOURCES} ${HTTP_SOURCES} ${WIDGET_SOURCES} ${WINDOW_SOURCES} ${PARSING_SOURCES} ${IM_PLOT_SOURCES})
 
 # 4. Include Directories
 # Allow includes like <imgui.h> and <backends/imgui_impl_glfw.h>
@@ -44,6 +49,7 @@ target_include_directories(app PUBLIC
     ${SRC_DIR}/render
     ${SRC_DIR}/utils
     ${SRC_DIR}/parsenrender
+    ${VENDOR_DIR}/implot
 )
 
 # 5. Link Libraries
