@@ -14,8 +14,12 @@
 #include <vector>
 
 #include "imgui.h"
+#include "implot.h"
 
 namespace Widgets {
+inline ImPlotContext* plot_context;
+void init();
+void cleanup();
 // Data expressed by the widget is owned by it to create a double buffer
 class Widget {
 public:
@@ -42,11 +46,16 @@ public:
         : Widget(_label), src(_src), ptype(_ptype) {}
 
     void draw() override {
+        // TODO
         float window_width = ImGui::GetWindowWidth();
+        float window_height = ImGui::GetWindowHeight();
         copyFromSource();
         switch (ptype) {
             case type::Line:
-                ImGui::PlotLines(label.c_str(), data.data(), buffer_max_limit, head, NULL, FLT_MAX, FLT_MAX, ImVec2(window_width, window_height));
+                // ImGui::PlotLines(label.c_str(), data.data(), buffer_max_limit, head, NULL, FLT_MAX, FLT_MAX, ImVec2(window_width, window_height));
+                ImPlot::BeginPlot(label.c_str());
+                ImPlot::PlotLine(label.c_str(), data.data(), buffer_max_limit, 1, 0, 0, head);
+                ImPlot::EndPlot();
                 break;
             case type::Histogram:
                 ImGui::PlotHistogram(label.c_str(), data.data(), buffer_max_limit, head);

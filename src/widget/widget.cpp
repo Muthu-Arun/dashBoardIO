@@ -7,8 +7,15 @@
 #include <string_view>
 
 #include "imgui.h"
+#include "implot.h"
 
 namespace Widgets {
+void init(){
+    ImPlotContext* plot_context = ImPlot::CreateContext();
+}
+void cleanup(){
+    ImPlot::DestroyContext(plot_context);
+}
 Widget::Widget(std::string_view _label) : label(_label) {}
 Widget::~Widget() {}
 // FIX textinput so the dest is the src, and modify the mutexes accordingly

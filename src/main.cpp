@@ -9,6 +9,7 @@
 #include <utility>
 #include "poll.h"
 #include "json.h"
+#include "widget.h"
 int main(int, char**)
 {
     // 1. Setup GLFW
@@ -40,6 +41,7 @@ int main(int, char**)
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
+    Widgets::init();
     ParseJson::HttpWindowWrapper win;
     win.initFRs();
     // Window::window win("hello");
@@ -83,6 +85,7 @@ int main(int, char**)
     }
 
     // Cleanup
+    Widgets::cleanup();
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
