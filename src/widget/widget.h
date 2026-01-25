@@ -1,6 +1,7 @@
 #pragma once
 #include <array>
 #include <atomic>
+#include <cfloat>
 #include <cmath>
 #include <concepts>
 #include <cstddef>
@@ -38,13 +39,14 @@ public:
     std::vector<_data_type> data = std::vector<_data_type>(buffer_max_limit, 0);
 
     Plot(std::string_view _label, type _ptype, std::atomic<_data_type>& _src)
-        : Widget(_label), ptype(_ptype), src(_src) {}
+        : Widget(_label), src(_src), ptype(_ptype) {}
 
     void draw() override {
+        float window_width = ImGui::GetWindowWidth();
         copyFromSource();
         switch (ptype) {
             case type::Line:
-                ImGui::PlotLines(label.c_str(), data.data(), buffer_max_limit, head);
+                ImGui::PlotLines(label.c_str(), data.data(), buffer_max_limit, head, NULL, FLT_MAX, FLT_MAX, ImVec2(window_width, window_height));
                 break;
             case type::Histogram:
                 ImGui::PlotHistogram(label.c_str(), data.data(), buffer_max_limit, head);
