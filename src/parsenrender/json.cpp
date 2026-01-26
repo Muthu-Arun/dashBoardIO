@@ -60,14 +60,12 @@ void HttpWindowWrapper::addRadialGauge(const std::string& _label, int data, int 
 void HttpWindowWrapper::addRadialGauge(const std::string& _label, float data, float min,
                                        float max) {
     map_float[_label] = data;
-    network_buffer_mtx[_label];
     window->addWidget(_label, std::make_unique<Widgets::RadialGauge<float>>(_label, min, max,
                                                                             map_float.at(_label)));
 }
 void HttpWindowWrapper::addPlot(const std::string& _label, float data,
                                 Widgets::Plot<float>::type ptype) {
     map_float[_label] = data;
-    network_buffer_mtx[_label];
     window->addWidget(_label, std::make_unique<Widgets::Plot<float>>(
                                   _label, ptype, map_float[_label]));
 }
@@ -123,11 +121,9 @@ void HttpWindowWrapper::initFRs() {
             }
         } else [[likely]] {
             if (map_int.find(label_) != map_int.end()) {
-                std::lock_guard<std::mutex> lock_(network_buffer_mtx[label_]);
                 map_int[label_] = params["data"].asInt();
                 window->widgets.at(label_)->is_data_available.store(true);
             } else {
-                std::lock_guard<std::mutex> lock_(network_buffer_mtx[label_]);
                 map_float[label_] = params["data"].asFloat();
                 window->widgets.at(label_)->is_data_available.store(true);
             }
@@ -137,7 +133,6 @@ void HttpWindowWrapper::initFRs() {
         if (!window->isWidgetPresent(label_)) {
             addPlot(label_, params["data"].asFloat());
         } else [[likely]] {
-            std::lock_guard<std::mutex> lock_(network_buffer_mtx[label_]);
             map_float[label_] = params["data"].asFloat();
             window->widgets.at(label_)->is_data_available.store(true);
         }
