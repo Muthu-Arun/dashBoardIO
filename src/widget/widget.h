@@ -47,12 +47,13 @@ public:
 
     void draw() override {
         // TODO
-        float window_width = ImGui::GetWindowWidth();
-        float window_height = ImGui::GetWindowHeight();
+        // float window_width = ImGui::GetWindowWidth();
+        // float window_height = ImGui::GetWindowHeight();
         copyFromSource();
         switch (ptype) {
             case type::Line:
-                // ImGui::PlotLines(label.c_str(), data.data(), buffer_max_limit, head, NULL, FLT_MAX, FLT_MAX, ImVec2(window_width, window_height));
+                // ImGui::PlotLines(label.c_str(), data.data(), buffer_max_limit, head, NULL,
+                // FLT_MAX, FLT_MAX, ImVec2(window_width, window_height));
                 ImPlot::BeginPlot(label.c_str());
                 ImPlot::PlotLine(label.c_str(), data.data(), buffer_max_limit, 1, 0, 0, head);
                 ImPlot::EndPlot();
@@ -66,6 +67,7 @@ public:
     void copyFromSource() {
         if (is_data_available.load()) {
             pushData();
+            // is_data_available.store(false);
         }
     }
     ~Plot() {}
@@ -75,6 +77,52 @@ private:
     void pushData() {
         data[head] = src.load();
         head = (head + 1) & (buffer_max_limit - 1);
+    }
+};
+// TODO - After implementing bar plots
+template <typename _data_type>  //, size_t buffer_size = 16384> // 16384 is 2^14
+class Histogram : public Widget {
+public:
+    std::vector<_data_type> data;
+    std::vector<_data_type>& src;
+    std::mutex& src_mtx;
+    Histogram(std::string_view _label, std::vector<_data_type>& _src, std::mutex& _src_mtx)
+        : Widget(_label), src(_src), src_mtx(_src_mtx) {};
+    void draw() override {
+        ImPlot::BeginPlot(label.c_str());
+        ImPlot::PlotHistogram(label.c_str(), data.data(), data.size());
+        ImPlot::EndPlot();
+    }
+    void copyFromSource() {
+        if (is_data_available.load()) {
+            std::lock_guard<std::mutex> lock(src_mtx);
+            data = src;
+            is_data_available.load(false);
+        }
+    }
+};
+
+template <typename _data_type>
+class BarPlot : public Widget {
+public:
+    std::vector<_data_type> data, &src;
+    std::vector<std::string> data_label, &src_label;
+    std::mutex& src_mtx;
+    BarPlot(std::string_view _label, std::vector<_data_type>& _src,
+            std::vector<_data_type>& _src_label, std::mutex& _src_mtx)
+        : Widget(_label), src(_src), src_label(_src_label), src_mtx(_src_mtx) {}
+    void draw() override {
+        copyFromSource();
+        ImPlot::BeginPlot(label.c_str());
+        // ImPlot::PlotBarGroups();
+        ImPlot::EndPlot();
+    }
+    void copyFromSource() {
+        if (is_data_available.load()) {
+            std::lock_guard<std::mutex> lock(src_mtx);
+            data = src;
+            data_label = src_label;
+        }
     }
 };
 
