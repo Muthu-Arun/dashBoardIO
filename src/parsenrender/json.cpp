@@ -149,9 +149,9 @@ void HttpWindowWrapper::parseJSON() {
 void HttpWindowWrapper::renderHeader() {
     ImGui::Begin(win_label.c_str());
     if (in_init_phase) [[unlikely]] {
-        ImGui::InputText("Host URL", host.data(), 250, ImGuiInputTextFlags_EnterReturnsTrue);
-        ImGui::InputText("Host Endpoint", host_endpoint.data(), 250,
-                         ImGuiInputTextFlags_EnterReturnsTrue);
+        ImGui::InputText("Host URL", host.data(), 250);
+        ImGui::InputText("Host Endpoint", host_endpoint.data(), 250
+                         );
         ImGui::InputScalar("Port", ImGuiDataType_U64, &port);
         if (ImGui::Button("Enter Host URL")) {
             poll.emplace(host.data(), host_endpoint.data(), port);
