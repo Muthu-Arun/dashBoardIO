@@ -80,6 +80,7 @@ private:
     }
 };
 // TODO - After implementing bar plots
+/*
 template <typename _data_type>  //, size_t buffer_size = 16384> // 16384 is 2^14
 class Histogram : public Widget {
 public:
@@ -101,12 +102,15 @@ public:
         }
     }
 };
-
-template <typename _data_type>
+*/
+template <typename _data_type = double>
+requires std::floating_point<_data_type>
 class BarPlot : public Widget {
 public:
     std::vector<_data_type> data, &src;
     std::vector<std::string> data_label, &src_label;
+    std::vector<const char*> label_format_Implot_axis;
+    bool change_in_data = false;
     std::mutex& src_mtx;
     BarPlot(std::string_view _label, std::vector<_data_type>& _src,
             std::vector<_data_type>& _src_label, std::mutex& _src_mtx)
@@ -114,7 +118,8 @@ public:
     void draw() override {
         copyFromSource();
         ImPlot::BeginPlot(label.c_str());
-        // ImPlot::PlotBarGroups();
+        ImPlot::SetupAxisTicks(ImAxis_X1, data.data(), label_format_Implot_axis.size(), label_format_Implot_axis.data());
+        ImPlot::PlotBars(label, data, data.size());
         ImPlot::EndPlot();
     }
     void copyFromSource() {
@@ -123,6 +128,13 @@ public:
             data = src;
             data_label = src_label;
         }
+    }
+    void build_label_format(){
+        label_format_Implot_axis.clear();
+        for(std::string& elems : data_label){
+            label_format_Implot_axis.push_back(elems.data());
+        }
+        change_in_data = false;
     }
 };
 
