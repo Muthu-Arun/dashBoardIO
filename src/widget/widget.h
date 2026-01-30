@@ -104,7 +104,7 @@ public:
 };
 */
 template <typename _data_type = double>
-requires std::floating_point<_data_type>
+    requires std::floating_point<_data_type>
 class BarPlot : public Widget {
 public:
     std::vector<_data_type> data, &src;
@@ -118,7 +118,8 @@ public:
     void draw() override {
         copyFromSource();
         ImPlot::BeginPlot(label.c_str());
-        ImPlot::SetupAxisTicks(ImAxis_X1, data.data(), label_format_Implot_axis.size(), label_format_Implot_axis.data());
+        ImPlot::SetupAxisTicks(ImAxis_X1, data.data(), label_format_Implot_axis.size(),
+                               label_format_Implot_axis.data());
         ImPlot::PlotBars(label, data, data.size());
         ImPlot::EndPlot();
     }
@@ -129,9 +130,9 @@ public:
             data_label = src_label;
         }
     }
-    void build_label_format(){
+    void build_label_format() {
         label_format_Implot_axis.clear();
-        for(std::string& elems : data_label){
+        for (std::string& elems : data_label) {
             label_format_Implot_axis.push_back(elems.data());
         }
         change_in_data = false;

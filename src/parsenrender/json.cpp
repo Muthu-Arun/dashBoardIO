@@ -44,6 +44,25 @@ JSON Structure
     ....
 }
 */
+/*
+Widget Specific JSON Structure
+Text:
+    type = text
+    data = data_text
+
+Plot:
+    type = plot
+    data = floating point or integer value
+
+RadialGauge:
+    type = radial_gauge
+    data = floating point value
+
+BarPlot:
+    type = bar_plot
+    data = array of doubles
+    data_labels = array of strings
+*/
 
 void HttpWindowWrapper::addText(const std::string& _label, std::string_view data) {
     map_string[_label] = data;  // IG using [] oprator is not a problem here as if there aren't any
@@ -52,7 +71,8 @@ void HttpWindowWrapper::addText(const std::string& _label, std::string_view data
     window->addWidget(_label, std::make_unique<Widgets::Text<>>(_label, map_string[_label],
                                                                 network_buffer_mtx[_label]));
 }
-void HttpWindowWrapper::addRadialGauge(const std::string& _label, int data, int min, int max) {
+void HttpWindowWrapper::addRadialGauge(const std::string& _label, int data, int min,
+                                       int max) {  // NOT TO BE USED, TODO REMOVE
     map_int[_label] = data;
     window->addWidget(
         _label, std::make_unique<Widgets::RadialGauge<int>>(_label, min, max, map_int.at(_label)));
@@ -66,10 +86,16 @@ void HttpWindowWrapper::addRadialGauge(const std::string& _label, float data, fl
 void HttpWindowWrapper::addPlot(const std::string& _label, float data,
                                 Widgets::Plot<float>::type ptype) {
     map_float[_label] = data;
-    window->addWidget(_label, std::make_unique<Widgets::Plot<float>>(
-                                  _label, ptype, map_float[_label]));
+    window->addWidget(_label,
+                      std::make_unique<Widgets::Plot<float>>(_label, ptype, map_float[_label]));
 }
-
+void HttpWindowWrapper::addBarPlot(const std::string& _label, const std::vector<double>& data,
+                                   const std::vector<std::string>& format_labels) {
+    map_vector_double[_label] = data;
+    map_vector_string[_label] = format_labels;
+    network_buffer_mtx[_label];
+}
+/*
 void parseDynamicJson(const Json::Value& root) {
     if (root.isArray()) {
     }
@@ -89,7 +115,7 @@ void parseDynamicJson(const Json::Value& root) {
         std::cout << "Value: " << root.asString() << std::endl;
     }
 }
-
+*/
 uint32_t HttpWindowWrapper::window_count = 0;
 
 HttpWindowWrapper::HttpWindowWrapper() {
@@ -137,6 +163,25 @@ void HttpWindowWrapper::initFRs() {
             window->widgets.at(label_)->is_data_available.store(true);
         }
     };
+    widget_updates_fr["bar_plot"] = [this](const std::string& label_, const Json::Value& params) {
+        std::vector<double> data_vec; std::vector<std::string> data_label_vec;
+        if (window->isWidgetPresent(label_)) {
+            if (params.isMember("data") && params.isMember("data_labels")) {
+                if (params["data"].isArray() && params["data_label"].isArray()){
+                    for (auto& elem : params["data"]) {
+                        data_vec.push_back(elem.asDouble());
+                    }
+                    for(auto& elem : params["data_label"]){
+                        data_label_vec.push_back(elem.asString());
+                    }
+                    std::lock_guard<std::mutex> lock(network_buffer_mtx[label_]);
+                    map_vector_double[label_] = std::move(data_vec);
+                    map_vector_string[label_] = std::move(data_label_vec);
+                    window->widgets.at(label_)->is_data_available.store(true);
+                }
+            }
+        }
+    };
 }
 void HttpWindowWrapper::parseJSON() {
     auto jsonptr = poll->getJSONBodyPtr();
@@ -150,8 +195,7 @@ void HttpWindowWrapper::renderHeader() {
     ImGui::Begin(win_label.c_str());
     if (in_init_phase) [[unlikely]] {
         ImGui::InputText("Host URL", host.data(), 250);
-        ImGui::InputText("Host Endpoint", host_endpoint.data(), 250
-                         );
+        ImGui::InputText("Host Endpoint", host_endpoint.data(), 250);
         ImGui::InputScalar("Port", ImGuiDataType_U64, &port);
         if (ImGui::Button("Enter Host URL")) {
             poll.emplace(host.data(), host_endpoint.data(), port);

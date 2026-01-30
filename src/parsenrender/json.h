@@ -23,6 +23,8 @@ protected:
     std::unordered_map<std::string, std::string> map_string;
     std::unordered_map<std::string, std::mutex> network_buffer_mtx;
     std::unordered_map<std::string, std::function<void(const std::string& id, const Json::Value&)>> widget_updates_fr;
+    std::unordered_map<std::string, std::vector<double>> map_vector_double;
+    std::unordered_map<std::string, std::vector<std::string>> map_vector_string;
     std::array<char, 250> host, host_endpoint;
     uint64_t port = 80;
     bool in_init_phase = 1;
@@ -38,6 +40,7 @@ public:
     void addRadialGauge(const std::string& _label, int data, int min, int max);
     void addRadialGauge(const std::string& _label, float data, float min, float max);
     void addPlot(const std::string& _label, float data, Widgets::Plot<float>::type ptype = Widgets::Plot<float>::type::Line);
+    void addBarPlot(const std::string& _label, const std::vector<double>& data, const std::vector<std::string>& format_labels);
     void renderHeader();
     void parseJSON();
     void initFRs();
