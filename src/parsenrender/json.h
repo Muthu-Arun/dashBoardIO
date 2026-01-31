@@ -37,7 +37,7 @@ public:
     std::optional<HttpPoll::Poll> poll;
     std::optional<Window::Window> window;
     void addText(const std::string& _label, std::string_view data);
-    void addRadialGauge(const std::string& _label, int data, int min, int max);
+    // void addRadialGauge(const std::string& _label, int data, int min, int max);
     void addRadialGauge(const std::string& _label, float data, float min, float max);
     void addPlot(const std::string& _label, float data, Widgets::Plot<float>::type ptype = Widgets::Plot<float>::type::Line);
     void addBarPlot(const std::string& _label, const std::vector<double>& data, const std::vector<std::string>& format_labels);

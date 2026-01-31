@@ -71,12 +71,14 @@ void HttpWindowWrapper::addText(const std::string& _label, std::string_view data
     window->addWidget(_label, std::make_unique<Widgets::Text<>>(_label, map_string[_label],
                                                                 network_buffer_mtx[_label]));
 }
+/*
 void HttpWindowWrapper::addRadialGauge(const std::string& _label, int data, int min,
                                        int max) {  // NOT TO BE USED, TODO REMOVE
     map_int[_label] = data;
     window->addWidget(
         _label, std::make_unique<Widgets::RadialGauge<int>>(_label, min, max, map_int.at(_label)));
 }
+*/
 void HttpWindowWrapper::addRadialGauge(const std::string& _label, float data, float min,
                                        float max) {
     map_float[_label] = data;
@@ -138,21 +140,11 @@ void HttpWindowWrapper::initFRs() {
     widget_updates_fr["radial_gauge"] = [this](const std::string& label_,
                                                const Json::Value& params) {
         if (!window->isWidgetPresent(label_)) {
-            if (params["dtype"].asString() == "int") {
-                addRadialGauge(label_, params["data"].asInt(), params["min"].asInt(),
-                               params["max"].asInt());
-            } else {
-                addRadialGauge(label_, params["data"].asFloat(), params["min"].asFloat(),
-                               params["max"].asFloat());
-            }
+            addRadialGauge(label_, params["data"].asFloat(), params["min"].asFloat(),
+                           params["max"].asFloat());
         } else [[likely]] {
-            if (map_int.find(label_) != map_int.end()) {
-                map_int[label_] = params["data"].asInt();
-                window->widgets.at(label_)->is_data_available.store(true);
-            } else {
-                map_float[label_] = params["data"].asFloat();
-                window->widgets.at(label_)->is_data_available.store(true);
-            }
+            map_float[label_] = params["data"].asFloat();
+            window->widgets.at(label_)->is_data_available.store(true);
         }
     };
     widget_updates_fr["plot"] = [this](const std::string& label_, const Json::Value& params) {
@@ -164,14 +156,15 @@ void HttpWindowWrapper::initFRs() {
         }
     };
     widget_updates_fr["bar_plot"] = [this](const std::string& label_, const Json::Value& params) {
-        std::vector<double> data_vec; std::vector<std::string> data_label_vec;
+        std::vector<double> data_vec;
+        std::vector<std::string> data_label_vec;
         if (window->isWidgetPresent(label_)) {
             if (params.isMember("data") && params.isMember("data_labels")) {
-                if (params["data"].isArray() && params["data_label"].isArray()){
+                if (params["data"].isArray() && params["data_label"].isArray()) {
                     for (auto& elem : params["data"]) {
                         data_vec.push_back(elem.asDouble());
                     }
-                    for(auto& elem : params["data_label"]){
+                    for (auto& elem : params["data_label"]) {
                         data_label_vec.push_back(elem.asString());
                     }
                     std::lock_guard<std::mutex> lock(network_buffer_mtx[label_]);
