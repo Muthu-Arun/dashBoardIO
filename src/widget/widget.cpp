@@ -11,7 +11,7 @@
 
 namespace Widgets {
 void init(){
-    ImPlotContext* plot_context = ImPlot::CreateContext();
+    plot_context = ImPlot::CreateContext();
 }
 void cleanup(){
     ImPlot::DestroyContext(plot_context);
