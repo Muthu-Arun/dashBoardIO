@@ -20,8 +20,7 @@ DashBoardIO is a native C++ application designed to decouple the user interface 
 
 * **Core:** C++20
 * **UI Library:** [Dear ImGui](https://github.com/ocornut/imgui) (Immediate Mode GUI)
-* **Networking:** [Drogon](https://github.com/drogonframework/drogon) / [cpr](https://github.com/libcpr/cpr) *(Adjust based on your actual implementation)*
-* **Serialization:** [nlohmann/json](https://github.com/nlohmann/json)
+* **Networking:** [Drogon](https://github.com/drogonframework/drogon)
 * **Build System:** CMake
 
 ## 🏗️ Architecture
