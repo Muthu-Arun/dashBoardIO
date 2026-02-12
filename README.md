@@ -43,7 +43,7 @@ DashBoardIO follows a strict separation of concerns:
 
 ```bash
 # Clone the repository
-git clone [https://github.com/Muthu-Arun/DashBoardIO.git](https://github.com/Muthu-Arun/DashBoardIO.git)
+git clone https://github.com/Muthu-Arun/dashBoardIO.git
 cd DashBoardIO
 
 # Create build directory
