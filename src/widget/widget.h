@@ -15,7 +15,7 @@
 
 #include "imgui.h"
 #include "implot.h"
-
+#include "util.h"
 namespace Widgets {
 inline ImPlotContext* plot_context;
 void init();
@@ -107,35 +107,48 @@ template <typename _data_type = double>
     requires std::floating_point<_data_type>
 class BarPlot : public Widget {
 public:
-    std::vector<_data_type> data, &src;
+    std::vector<_data_type> data, &src, pos;
     std::vector<std::string> data_label, &src_label;
     std::vector<const char*> label_format_Implot_axis;
-    bool change_in_data = false;
+    int prev_bar_count = 0;
     std::mutex& src_mtx;
     BarPlot(std::string_view _label, std::vector<_data_type>& _src,
-            std::vector<_data_type>& _src_label, std::mutex& _src_mtx)
+            std::vector<std::string>& _src_label, std::mutex& _src_mtx)
         : Widget(_label), src(_src), src_label(_src_label), src_mtx(_src_mtx) {}
     void draw() override {
         copyFromSource();
-        ImPlot::BeginPlot(label.c_str());
-        ImPlot::SetupAxisTicks(ImAxis_X1, data.data(), label_format_Implot_axis.size(),
-                               label_format_Implot_axis.data());
-        ImPlot::PlotBars(label, data, data.size());
-        ImPlot::EndPlot();
+        if (ImPlot::BeginPlot(label.c_str())) {
+            ImPlot::SetupAxisTicks(ImAxis_X1, pos.data(), label_format_Implot_axis.size(),
+                                   label_format_Implot_axis.data());
+            ImPlot::PlotBars(label.c_str(), data.data(), data.size());
+            // Utils::Log::logVec(data);
+            for(int i = 0; i < pos.size(); i++){
+                ImPlot::Annotation(pos[i], data[i], ImVec4(0,0,0,0), ImVec2(0, -10), true, "%.1f", data[i]);
+            }
+            ImPlot::EndPlot();
+        }
     }
     void copyFromSource() {
         if (is_data_available.load()) {
             std::lock_guard<std::mutex> lock(src_mtx);
+            // std::cerr << "Logging form CPS\n";
+            // Utils::Log::logVec(src);
             data = src;
             data_label = src_label;
+            build_label_format();
         }
     }
     void build_label_format() {
+        if (data.size() != prev_bar_count) {
+            for (int i = 0; i < data.size(); i++) {
+                pos.push_back(static_cast<double>(i));
+            }
+            prev_bar_count = data.size();
+        }
         label_format_Implot_axis.clear();
         for (std::string& elems : data_label) {
             label_format_Implot_axis.push_back(elems.data());
         }
-        change_in_data = false;
     }
 };
 
@@ -181,7 +194,7 @@ public:
     ~Text() {}
 };
 
-template <typename _data_type>
+template <typename _data_type = float>
     requires std::integral<_data_type> || std::floating_point<_data_type>
 class RadialGauge : public Widget {
 protected:

@@ -96,6 +96,9 @@ void HttpWindowWrapper::addBarPlot(const std::string& _label, const std::vector<
     map_vector_double[_label] = data;
     map_vector_string[_label] = format_labels;
     network_buffer_mtx[_label];
+    window->addWidget(_label, std::make_unique<Widgets::BarPlot<double>>(
+                                  _label, map_vector_double[_label], map_vector_string[_label],
+                                  network_buffer_mtx[_label]));
 }
 /*
 void parseDynamicJson(const Json::Value& root) {
@@ -158,21 +161,26 @@ void HttpWindowWrapper::initFRs() {
     widget_updates_fr["bar_plot"] = [this](const std::string& label_, const Json::Value& params) {
         std::vector<double> data_vec;
         std::vector<std::string> data_label_vec;
-        if (window->isWidgetPresent(label_)) {
-            if (params.isMember("data") && params.isMember("data_labels")) {
-                if (params["data"].isArray() && params["data_label"].isArray()) {
-                    for (auto& elem : params["data"]) {
-                        data_vec.push_back(elem.asDouble());
-                    }
-                    for (auto& elem : params["data_label"]) {
-                        data_label_vec.push_back(elem.asString());
-                    }
-                    std::lock_guard<std::mutex> lock(network_buffer_mtx[label_]);
-                    map_vector_double[label_] = std::move(data_vec);
-                    map_vector_string[label_] = std::move(data_label_vec);
-                    window->widgets.at(label_)->is_data_available.store(true);
+        if (params.isMember("data") && params.isMember("data_labels")) {
+            if (params["data"].isArray() && params["data_labels"].isArray()) {
+                for (auto& elem : params["data"]) {
+                    data_vec.push_back(elem.asDouble());
+                }
+                for (auto& elem : params["data_label"]) {
+                    data_label_vec.push_back(elem.asString());
                 }
             }
+            else {
+                std::cerr << "Values Expected as Arrays for bar_plot\n";
+            }
+        }
+        if (window->isWidgetPresent(label_)) {
+            std::lock_guard<std::mutex> lock(network_buffer_mtx[label_]);
+            map_vector_double[label_] = std::move(data_vec);
+            map_vector_string[label_] = std::move(data_label_vec);
+            window->widgets.at(label_)->is_data_available.store(true);
+        } else {
+            addBarPlot(label_, data_vec, data_label_vec);
         }
     };
 }
