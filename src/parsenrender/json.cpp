@@ -166,7 +166,7 @@ void HttpWindowWrapper::initFRs() {
                 for (auto& elem : params["data"]) {
                     data_vec.push_back(elem.asDouble());
                 }
-                for (auto& elem : params["data_label"]) {
+                for (auto& elem : params["data_labels"]) {
                     data_label_vec.push_back(elem.asString());
                 }
             }

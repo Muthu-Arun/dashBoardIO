@@ -118,6 +118,8 @@ public:
     void draw() override {
         copyFromSource();
         if (ImPlot::BeginPlot(label.c_str())) {
+            // ImPlot::SetupAxes("Category", "Value", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
+            // Utils::Log::logVec(src_label);
             ImPlot::SetupAxisTicks(ImAxis_X1, pos.data(), label_format_Implot_axis.size(),
                                    label_format_Implot_axis.data());
             ImPlot::PlotBars(label.c_str(), data.data(), data.size());
