@@ -88,4 +88,13 @@ Poll::~Poll() {
 std::shared_ptr<Json::Value>& Poll::getJSONBodyPtr() noexcept {
     return json_ptr;
 }
+std::function<void(std::string_view, drogon::HttpMethod)> Poll::getButtonCallback() {
+    auto callback = [this](std::string_view _endpoint, drogon::HttpMethod _method) {
+        HttpClientPtr client = HttpClient::newHttpClient(remote_url, port);
+        HttpRequestPtr request = HttpRequest::newHttpRequest();
+        request->setMethod(_method);
+        client->sendRequest(request);
+    };
+    return callback;
+}
 }  // namespace HttpPoll

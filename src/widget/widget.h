@@ -118,14 +118,15 @@ public:
     void draw() override {
         copyFromSource();
         if (ImPlot::BeginPlot(label.c_str())) {
-            // ImPlot::SetupAxes("Category", "Value", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
-            // Utils::Log::logVec(src_label);
+            // ImPlot::SetupAxes("Category", "Value", ImPlotAxisFlags_AutoFit,
+            // ImPlotAxisFlags_AutoFit); Utils::Log::logVec(src_label);
             ImPlot::SetupAxisTicks(ImAxis_X1, pos.data(), label_format_Implot_axis.size(),
                                    label_format_Implot_axis.data());
             ImPlot::PlotBars(label.c_str(), data.data(), data.size());
             // Utils::Log::logVec(data);
-            for(int i = 0; i < pos.size(); i++){
-                ImPlot::Annotation(pos[i], data[i], ImVec4(0,0,0,0), ImVec2(0, -10), true, "%.1f", data[i]);
+            for (int i = 0; i < pos.size(); i++) {
+                ImPlot::Annotation(pos[i], data[i], ImVec4(0, 0, 0, 0), ImVec2(0, -10), true,
+                                   "%.1f", data[i]);
             }
             ImPlot::EndPlot();
         }
@@ -162,7 +163,8 @@ private:
 public:
     enum class event : uint8_t { ON_CLICK, ON_RELEASE };
 
-    Button(std::string_view _label) : Widget(_label) {}
+    Button(std::string_view _label, std::function<void()>&& _call_on_event)
+        : Widget(_label), call_on_event(_call_on_event) {}
 
     void draw() override {
         if (ImGui::Button(label.c_str())) {
