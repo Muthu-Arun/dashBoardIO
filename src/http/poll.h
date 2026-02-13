@@ -47,7 +47,7 @@ public:
     bool is_data_available() const noexcept;
     std::shared_ptr<Json::Value>& getJSONBodyPtr() noexcept;
     std::pair<const std::variant<std::string, Json::Value>&, std::mutex&> getBody() const noexcept;
-    std::function<void(std::string_view, drogon::HttpMethod)> getButtonCallback();
+    std::function<void(const std::string&, drogon::HttpMethod)> getButtonCallback();
     ~Poll();
 
 private:
