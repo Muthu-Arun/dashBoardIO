@@ -1,5 +1,6 @@
 #include "json.h"
 
+#include <drogon/HttpTypes.h>
 #include <json/value.h>
 
 #include <format>
@@ -196,6 +197,7 @@ void HttpWindowWrapper::initFRs() {
             }
             else {
                 std::string endpoint = params["endpoint"].asString(), method = params["method"].asString(); // For now assuming all methods are in Upper Case
+                addButton(label_, endpoint, drogon::HttpMethod::Get); // Just to test for now NEED TO CHANGE
             }
         }
     };

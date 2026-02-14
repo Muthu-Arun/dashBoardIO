@@ -159,7 +159,7 @@ public:
 template <typename _callable = std::function<void(const std::string&, drogon::HttpMethod, const std::string&)>>
 class Button : public Widget {
 private:
-    std::string endpoint;
+    std::string endpoint, body;
     drogon::HttpMethod method;
     _callable call_on_event;
 
@@ -171,7 +171,8 @@ public:
 
     void draw() override {
         if (ImGui::Button(label.c_str())) {
-            // call_on_event();
+            std::cerr << "Executing Button Event\n";
+            call_on_event(endpoint, drogon::HttpMethod::Get, body);
         }
     }
     ~Button() {}

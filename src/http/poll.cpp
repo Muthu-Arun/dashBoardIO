@@ -7,6 +7,7 @@
 
 #include <chrono>
 #include <cstdint>
+#include <format>
 #include <iostream>
 #include <mutex>
 #include <string_view>
@@ -88,14 +89,26 @@ Poll::~Poll() {
 std::shared_ptr<Json::Value>& Poll::getJSONBodyPtr() noexcept {
     return json_ptr;
 }
-std::function<void(const std::string&, drogon::HttpMethod, const std::string&)> Poll::getButtonCallback() {
-    auto callback = [this](const std::string& _endpoint, drogon::HttpMethod _method, const std::string& _body) {
-        HttpClientPtr client = HttpClient::newHttpClient(remote_url + _endpoint, port);
+std::function<void(const std::string&, drogon::HttpMethod, const std::string&)>
+Poll::getButtonCallback() {
+    auto callback = [this](const std::string& _endpoint, drogon::HttpMethod _method,
+                           const std::string& _body) {
+        /*
+        std::string path = remote_url + _endpoint;
+        std::cerr << "Path before request =>";
+        std::cerr << path << '\n';
+        */
+        HttpClientPtr client = HttpClient::newHttpClient(remote_url, port);
         HttpRequestPtr request = HttpRequest::newHttpRequest();
         request->setMethod(_method);
-        if(_body.size())
+        request->setPath(_endpoint);
+        if (_body.size())
             request->setBody(_body);
-        client->sendRequest(request);
+        auto [reqRes, resPtr] = client->sendRequest(request);
+        if (reqRes != drogon::ReqResult::Ok) {
+            std::cerr << "Request Failed\n";
+            std::cerr << std::format("Url => {}\n\n", request->getPath());
+        }
     };
     return callback;
 }
