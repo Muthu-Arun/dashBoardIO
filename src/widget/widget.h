@@ -1,4 +1,5 @@
 #pragma once
+#include <drogon/HttpTypes.h>
 #include <array>
 #include <atomic>
 #include <cfloat>
@@ -155,20 +156,22 @@ public:
     }
 };
 
-template <typename _callable = std::function<void()>>
+template <typename _callable = std::function<void(const std::string&, drogon::HttpMethod, const std::string&)>>
 class Button : public Widget {
 private:
+    std::string endpoint;
+    drogon::HttpMethod method;
     _callable call_on_event;
 
 public:
     enum class event : uint8_t { ON_CLICK, ON_RELEASE };
 
-    Button(std::string_view _label, std::function<void()>&& _call_on_event)
-        : Widget(_label), call_on_event(_call_on_event) {}
+    Button(std::string_view _label, const std::string& _endpoint, drogon::HttpMethod _method, std::function<void(const std::string&, drogon::HttpMethod, const std::string&)>&& _call_on_event)
+        : Widget(_label), endpoint(_endpoint), method(_method), call_on_event(_call_on_event) {}
 
     void draw() override {
         if (ImGui::Button(label.c_str())) {
-            call_on_event();
+            // call_on_event();
         }
     }
     ~Button() {}

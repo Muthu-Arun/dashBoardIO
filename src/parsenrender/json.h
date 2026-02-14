@@ -1,4 +1,5 @@
 #pragma once
+#include <drogon/HttpTypes.h>
 #include <json/value.h>
 #include <array>
 #include <atomic>
@@ -41,6 +42,7 @@ public:
     void addRadialGauge(const std::string& _label, float data, float min, float max);
     void addPlot(const std::string& _label, float data, Widgets::Plot<float>::type ptype = Widgets::Plot<float>::type::Line);
     void addBarPlot(const std::string& _label, const std::vector<double>& data, const std::vector<std::string>& format_labels);
+    void addButton(const std::string& _label, const std::string& endpoint, drogon::HttpMethod method);
     void renderHeader();
     void parseJSON();
     void initFRs();

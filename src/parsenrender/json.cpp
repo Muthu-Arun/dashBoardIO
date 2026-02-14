@@ -100,6 +100,13 @@ void HttpWindowWrapper::addBarPlot(const std::string& _label, const std::vector<
                                   _label, map_vector_double[_label], map_vector_string[_label],
                                   network_buffer_mtx[_label]));
 }
+
+void HttpWindowWrapper::addButton(const std::string& _label, const std::string& endpoint,
+                                  drogon::HttpMethod method) {
+    window->addWidget(_label,
+                      std::make_unique<Widgets::Button<>>(_label, endpoint, method, poll->getButtonCallback()));
+}
+
 /*
 void parseDynamicJson(const Json::Value& root) {
     if (root.isArray()) {
@@ -169,8 +176,7 @@ void HttpWindowWrapper::initFRs() {
                 for (auto& elem : params["data_labels"]) {
                     data_label_vec.push_back(elem.asString());
                 }
-            }
-            else {
+            } else {
                 std::cerr << "Values Expected as Arrays for bar_plot\n";
             }
         }
@@ -183,11 +189,21 @@ void HttpWindowWrapper::initFRs() {
             addBarPlot(label_, data_vec, data_label_vec);
         }
     };
+    widget_updates_fr["button"] = [this](const std::string& label_, const Json::Value& params){
+        if (params.isMember("method") && params.isMember("endpoint")) {
+            if (window->isWidgetPresent(label_)) {
+                // Do nothing for now, a button does not need an updation
+            }
+            else {
+                std::string endpoint = params["endpoint"].asString(), method = params["method"].asString(); // For now assuming all methods are in Upper Case
+            }
+        }
+    };
 }
 void HttpWindowWrapper::parseJSON() {
     auto jsonptr = poll->getJSONBodyPtr();
     const Json::Value& json = *jsonptr;
-    for (std::string& id : json.getMemberNames()) {
+    for (const std::string& id : json.getMemberNames()) {
         widget_updates_fr.at(json[id]["type"].asString())(id, json[id]);
     }
 }
