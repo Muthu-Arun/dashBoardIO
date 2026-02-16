@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <functional>
+#include <future>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -162,6 +163,7 @@ private:
     std::string endpoint, body;
     drogon::HttpMethod method;
     _callable call_on_event;
+    std::future<void> btn_ftr;
 
 public:
     enum class event : uint8_t { ON_CLICK, ON_RELEASE };
@@ -172,7 +174,10 @@ public:
     void draw() override {
         if (ImGui::Button(label.c_str())) {
             std::cerr << "Executing Button Event\n";
-            call_on_event(endpoint, drogon::HttpMethod::Get, body);
+            // call_on_event(endpoint, drogon::HttpMethod::Get, body);
+            btn_ftr = std::async(std::launch::async, call_on_event, endpoint, drogon::HttpMethod::Get, body);
+            std::cerr << "Exiting Button Event\n";
+            
         }
     }
     ~Button() {}
