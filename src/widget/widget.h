@@ -1,5 +1,6 @@
 #pragma once
 #include <drogon/HttpTypes.h>
+
 #include <array>
 #include <atomic>
 #include <cfloat>
@@ -56,9 +57,10 @@ public:
             case type::Line:
                 // ImGui::PlotLines(label.c_str(), data.data(), buffer_max_limit, head, NULL,
                 // FLT_MAX, FLT_MAX, ImVec2(window_width, window_height));
-                ImPlot::BeginPlot(label.c_str());
-                ImPlot::PlotLine(label.c_str(), data.data(), buffer_max_limit, 1, 0, 0, head);
-                ImPlot::EndPlot();
+                if (ImPlot::BeginPlot(label.c_str())) {
+                    ImPlot::PlotLine(label.c_str(), data.data(), buffer_max_limit, 1, 0, 0, head);
+                    ImPlot::EndPlot();
+                }
                 break;
             case type::Histogram:
                 ImGui::PlotHistogram(label.c_str(), data.data(), buffer_max_limit, head);
@@ -157,7 +159,8 @@ public:
     }
 };
 
-template <typename _callable = std::function<void(const std::string&, drogon::HttpMethod, const std::string&)>>
+template <typename _callable =
+              std::function<void(const std::string&, drogon::HttpMethod, const std::string&)>>
 class Button : public Widget {
 private:
     std::string endpoint, body;
@@ -168,16 +171,18 @@ private:
 public:
     enum class event : uint8_t { ON_CLICK, ON_RELEASE };
 
-    Button(std::string_view _label, const std::string& _endpoint, drogon::HttpMethod _method, std::function<void(const std::string&, drogon::HttpMethod, const std::string&)>&& _call_on_event)
+    Button(std::string_view _label, const std::string& _endpoint, drogon::HttpMethod _method,
+           std::function<void(const std::string&, drogon::HttpMethod, const std::string&)>&&
+               _call_on_event)
         : Widget(_label), endpoint(_endpoint), method(_method), call_on_event(_call_on_event) {}
 
     void draw() override {
         if (ImGui::Button(label.c_str())) {
             std::cerr << "Executing Button Event\n";
             // call_on_event(endpoint, drogon::HttpMethod::Get, body);
-            btn_ftr = std::async(std::launch::async, call_on_event, endpoint, drogon::HttpMethod::Get, body);
+            btn_ftr = std::async(std::launch::async, call_on_event, endpoint,
+                                 drogon::HttpMethod::Get, body);
             std::cerr << "Exiting Button Event\n";
-            
         }
     }
     ~Button() {}
