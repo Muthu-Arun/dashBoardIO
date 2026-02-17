@@ -14,7 +14,7 @@ DashBoardIO is a native C++ application designed to decouple the user interface 
 * **High-Performance Native App:** Built with **Modern C++ (C++17/20)** and **Dear ImGui**, ensuring low memory footprint and immediate-mode rendering speeds that web dashboards can't match.
 * **Asynchronous Networking:** Non-blocking I/O ensures the UI remains responsive even while streaming heavy data payloads or handling complex network requests.
 * **Hot-Reloading:** Modify the JSON response on your server, and DashBoardIO reflects the changes in real-time on the next fetch cycle.
-* **Cross-Platform:** Designed to run on Linux, Windows, and macOS.
+* **Cross-Platform:** Designed to run on Linux, Windows, and macOS. **Currently at Pre-MVP Stage Only Linux Support**
 
 ## 🛠️ Tech Stack
 
@@ -34,10 +34,11 @@ DashBoardIO follows a strict separation of concerns:
 ## 📦 Build Instructions
 
 ### Prerequisites
-
+* **NOTE:** The project is in a pre MVP stage, only tested in ubuntu and ubuntu based distros
 * C++20 compatible compiler (GCC/Clang/MSVC)
-* CMake (3.15+)
+* CMake (3.10+) with Make or Ninja
 * OpenGL / GLFW dependencies
+* Drogon Installed
 
 ### Building from Source
 

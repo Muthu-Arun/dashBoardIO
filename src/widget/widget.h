@@ -272,4 +272,13 @@ public:
     void draw() override;
     void copyFromSource();
 };
+template<typename _data_type = std::byte>
+class Image : public Widget{
+public:
+    const std::vector<_data_type> data, &src;
+    std::mutex& src_mtx;
+
+    Image(std::string_view _label, const std::vector<_data_type>& _src, std::mutex& _src_mtx) : 
+        Widget(_label), src(_src), src_mtx(_src_mtx) {}
+};
 }  // namespace Widgets
