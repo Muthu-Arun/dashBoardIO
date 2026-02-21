@@ -20,9 +20,12 @@
 #include "implot.h"
 #include "util.h"
 namespace Widgets {
+
 inline ImPlotContext* plot_context;
+
 void init();
 void cleanup();
+
 // Data expressed by the widget is owned by it to create a double buffer
 class Widget {
 public:
@@ -71,7 +74,7 @@ public:
     void copyFromSource() {
         if (is_data_available.load()) {
             pushData();
-            // is_data_available.store(false);
+            is_data_available.store(false);
         }
     }
     ~Plot() {}
@@ -142,6 +145,7 @@ public:
             // Utils::Log::logVec(src);
             data = src;
             data_label = src_label;
+            is_data_available.store(false);
             build_label_format();
         }
     }
@@ -272,13 +276,15 @@ public:
     void draw() override;
     void copyFromSource();
 };
-template<typename _data_type = std::byte>
-class Image : public Widget{
+template <typename _data_type = std::byte>
+class Image : public Widget {
 public:
-    const std::vector<_data_type> data, &src;
+    std::vector<_data_type> data; // Request for the Image with its label from the provided endpoint
+    std::string endpoint;
+    const std::vector<_data_type>& src;
     std::mutex& src_mtx;
 
-    Image(std::string_view _label, const std::vector<_data_type>& _src, std::mutex& _src_mtx) : 
-        Widget(_label), src(_src), src_mtx(_src_mtx) {}
+    Image(std::string_view _label, const std::vector<_data_type>& _src, std::mutex& _src_mtx, const std::string& _endpoint)
+        : Widget(_label), endpoint(_endpoint), src(_src), src_mtx(_src_mtx) {}
 };
 }  // namespace Widgets
