@@ -1,19 +1,20 @@
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
 #include <GLFW/glfw3.h>
+#include <stdio.h>
+
 #include <atomic>
 #include <memory>
 #include <mutex>
-#include <stdio.h>
 #include <utility>
-#include "poll.h"
+
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 #include "json.h"
+#include "poll.h"
 #include "widget.h"
-int main(int, char**)
-{
+int main(int, char**) {
     // 1. Setup GLFW
-    HttpPoll::init();    
+    HttpPoll::init();
     if (!glfwInit())
         return 1;
 
@@ -28,13 +29,36 @@ int main(int, char**)
     if (window == NULL)
         return 1;
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(1); // Enable vsync
+    glfwSwapInterval(1);  // Enable vsync
 
     // 2. Setup Dear ImGui context
     // IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); // (void)io;
-    
+    ImGuiIO& io = ImGui::GetIO();  // (void)io;
+
+    // Global or member variables to store your font pointers
+
+    // ... Inside your initialization code (where you setup ImGui) ...
+
+    // Enable anti-aliasing (usually on by default, but good to ensure)
+    io.Fonts->Flags |= ImFontAtlasFlags_NoBakedLines;
+
+    // Setup font config for better quality (Oversampling)
+    ImFontConfig config;
+    config.OversampleH = 3;  // Renders the font at 3x horizontal resolution, then scales down
+    config.OversampleV = 1;
+    config.PixelSnapH = true;
+
+    // 1. Load the Regular Font (Size 16.0f)
+
+    // 2. Load the Bold Font (Size 16.0f)
+    Widgets::g_FontBold = io.Fonts->AddFontFromFileTTF("fonts/Roboto-Bold.ttf", 20.0f, &config);
+
+    Widgets::g_FontRegular = io.Fonts->AddFontFromFileTTF("fonts/Roboto-Regular.ttf", 16.0f, &config);
+
+    // Build the font atlas (your backend usually does this automatically,
+    // but if you are doing custom engine integration, call this)
+    // io.Fonts->Build();
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
 
@@ -47,8 +71,7 @@ int main(int, char**)
     // Window::window win("hello");
     // win.addWidget("win1", std::make_unique<Widget::text<>>("sample"));
     // 3. Main loop
-    while (!glfwWindowShouldClose(window))
-    {
+    while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
 
         // Start the Dear ImGui frame

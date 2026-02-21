@@ -21,6 +21,8 @@
 #include "implot.h"
 #include "util.h"
 namespace Widgets {
+inline ImFont* g_FontRegular = nullptr;
+inline ImFont* g_FontBold = nullptr;
 
 inline ImPlotContext* plot_context;
 
@@ -263,7 +265,9 @@ public:
         draw_list->PathStroke(ImGui::GetColorU32(ImGuiCol_PlotHistogram), 0, 10.0f);
         const std::string val_str = std::format("{}", temp_data);
         draw_list->AddText(pos, IM_COL32(255, 0, 0, 255), label.c_str());
+        // draw_list->AddText(g_FontBold, 16.0, pos, IM_COL32(255, 0, 0, 255), label.c_str());
         draw_list->AddText(val_pos, IM_COL32(0, 255, 0, 255), val_str.c_str());
+        // draw_list->AddText(g_FontBold, 16.0, val_pos, IM_COL32(255, 0, 0, 255), val_str.c_str());
     }
 
     ~RadialGauge() {}
