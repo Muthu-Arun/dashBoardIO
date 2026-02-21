@@ -8,6 +8,7 @@
 #include <concepts>
 #include <cstddef>
 #include <cstdint>
+#include <format>
 #include <functional>
 #include <future>
 #include <memory>
@@ -242,7 +243,7 @@ public:
         ImVec2 pos = ImGui::GetCursorScreenPos();  // Top-left corner of the widget
         ImVec2 center = ImVec2(pos.x + coordinates.radius, pos.y + coordinates.radius);
         ImGui::Dummy(ImVec2(coordinates.width, coordinates.width));  // Reserve the space
-
+        _data_type temp_data = data.load();
         // DRAW
         ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
@@ -254,11 +255,15 @@ public:
                               10.0f);  // 10px thickness
         float current_angle =
             coordinates.start_angle +
-            (coordinates.end_angle - coordinates.start_angle) * (data.load() / range[1]);
+            (coordinates.end_angle - coordinates.start_angle) * (temp_data / range[1]);
 
+        auto val_pos = ImVec2(pos.x + coordinates.width * 0.4, pos.y + coordinates.width * 0.75);
         draw_list->PathArcTo(center, coordinates.radius, coordinates.start_angle, current_angle,
                              32);
         draw_list->PathStroke(ImGui::GetColorU32(ImGuiCol_PlotHistogram), 0, 10.0f);
+        const std::string val_str = std::format("{}", temp_data);
+        draw_list->AddText(pos, IM_COL32(255, 0, 0, 255), label.c_str());
+        draw_list->AddText(val_pos, IM_COL32(0, 255, 0, 255), val_str.c_str());
     }
 
     ~RadialGauge() {}
@@ -279,12 +284,14 @@ public:
 template <typename _data_type = std::byte>
 class Image : public Widget {
 public:
-    std::vector<_data_type> data; // Request for the Image with its label from the provided endpoint
+    std::vector<_data_type>
+        data;  // Request for the Image with its label from the provided endpoint
     std::string endpoint;
     const std::vector<_data_type>& src;
     std::mutex& src_mtx;
 
-    Image(std::string_view _label, const std::vector<_data_type>& _src, std::mutex& _src_mtx, const std::string& _endpoint)
+    Image(std::string_view _label, const std::vector<_data_type>& _src, std::mutex& _src_mtx,
+          const std::string& _endpoint)
         : Widget(_label), endpoint(_endpoint), src(_src), src_mtx(_src_mtx) {}
 };
 }  // namespace Widgets
