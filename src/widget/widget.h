@@ -260,12 +260,13 @@ public:
             (coordinates.end_angle - coordinates.start_angle) * (temp_data / range[1]);
 
         auto val_pos = ImVec2(pos.x + coordinates.width * 0.4, pos.y + coordinates.width * 0.75);
+        auto label_pos = ImVec2(pos.x + 0.4 * coordinates.width, pos.y + coordinates.width * 0.6);
         draw_list->PathArcTo(center, coordinates.radius, coordinates.start_angle, current_angle,
                              32);
         draw_list->PathStroke(ImGui::GetColorU32(ImGuiCol_PlotHistogram), 0, 10.0f);
         const std::string val_str = std::format("{}", temp_data);
-        draw_list->AddText(pos, IM_COL32(255, 0, 0, 255), label.c_str());
-        // draw_list->AddText(g_FontBold, 16.0, pos, IM_COL32(255, 0, 0, 255), label.c_str());
+        // draw_list->AddText(pos, IM_COL32(255, 0, 0, 255), label.c_str());
+        draw_list->AddText(g_FontBold, 26.0, label_pos, IM_COL32(255, 0, 0, 255), label.c_str());
         draw_list->AddText(val_pos, IM_COL32(0, 255, 0, 255), val_str.c_str());
         // draw_list->AddText(g_FontBold, 16.0, val_pos, IM_COL32(255, 0, 0, 255), val_str.c_str());
     }

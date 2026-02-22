@@ -19,13 +19,12 @@ int main(int, char**) {
         return 1;
 
     // Decide GL+GLSL versions
-    std::string text;
     const char* glsl_version = "#version 130";
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
     // Create window with graphics context
-    GLFWwindow* window = glfwCreateWindow(1280, 720, "Dear ImGui Linux Example", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(1280, 720, "dashBoardIO", NULL, NULL);
     if (window == NULL)
         return 1;
     glfwMakeContextCurrent(window);
@@ -36,7 +35,6 @@ int main(int, char**) {
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();  // (void)io;
 
-    // Global or member variables to store your font pointers
 
     // ... Inside your initialization code (where you setup ImGui) ...
 
@@ -80,20 +78,6 @@ int main(int, char**) {
         ImGui::NewFrame();
         // win.render();
         win.renderHeader();
-
-        // ImGui::Begin("Hello, Linux!");
-        // ImGui::Text("%s", text.c_str());
-        // if(HttpPoll::is_data_available.load(std::memory_order_acquire)){
-        //     std::lock_guard<std::mutex> _lock(HttpPoll::data_mtx);
-        //     text = std::move(HttpPoll::data.front());
-        //     HttpPoll::data.pop();
-        //     HttpPoll::is_data_available.store(false);
-
-        // }
-        // ImGui::End();
-
-        // Show the built-in demo window (useful for learning)
-        // ImGui::ShowDemoWindow();
 
         // Rendering
         ImGui::Render();
