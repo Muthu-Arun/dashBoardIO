@@ -298,5 +298,9 @@ public:
     Image(std::string_view _label, const std::vector<_data_type>& _src, std::mutex& _src_mtx,
           const std::string& _endpoint)
         : Widget(_label), endpoint(_endpoint), src(_src), src_mtx(_src_mtx) {}
+
+    void draw() override {
+        // ImGui::Image();
+    }
 };
 }  // namespace Widgets

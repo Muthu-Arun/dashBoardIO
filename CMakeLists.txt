@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(MyImGuiApp)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 # add_compile_options(-Wall -Wextra -Wpedantic -Werror)
 add_compile_options(-Wall -Wextra )
 # 1. Find system dependencies (GLFW and OpenGL)
@@ -50,6 +50,7 @@ target_include_directories(app PUBLIC
     ${SRC_DIR}/utils
     ${SRC_DIR}/parsenrender
     ${VENDOR_DIR}/implot
+    ${VENDOR_DIR}/stb
 )
 
 # 5. Link Libraries
