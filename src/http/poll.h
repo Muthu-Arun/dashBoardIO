@@ -49,7 +49,8 @@ public:
     std::pair<const std::variant<std::string, Json::Value>&, std::mutex&> getBody() const noexcept;
     std::function<void(const std::string&, drogon::HttpMethod, const std::string&)>
     getButtonCallback();
-    std::function<std::string_view(const std::string&)> getImagePoller();
+    std::function<void(const std::string&, std::string&, std::atomic<bool>&)> getImagePoller();
+    void pollImage(const std::string& endpoint, std::string& img_buf, std::atomic<bool>& is_new_data_available);
     ~Poll();
 
 private:

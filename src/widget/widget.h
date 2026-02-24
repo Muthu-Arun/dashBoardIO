@@ -8,6 +8,7 @@
 #include <concepts>
 #include <cstddef>
 #include <cstdint>
+#include <expected>
 #include <format>
 #include <functional>
 #include <future>
@@ -286,21 +287,28 @@ public:
     void draw() override;
     void copyFromSource();
 };
-template <typename _data_type = std::byte>
+template <typename _data_type = std::string>
 class Image : public Widget {
 public:
-    std::vector<_data_type>
-        data;  // Request for the Image with its label from the provided endpoint
+    std::string data;  // Request for the Image with its label from the provided endpoint
     std::string endpoint;
-    const std::vector<_data_type>& src;
+    const std::string& src;
     std::mutex& src_mtx;
 
-    Image(std::string_view _label, const std::vector<_data_type>& _src, std::mutex& _src_mtx,
+    Image(std::string_view _label, const std::string& _src, std::mutex& _src_mtx,
           const std::string& _endpoint)
         : Widget(_label), endpoint(_endpoint), src(_src), src_mtx(_src_mtx) {}
 
     void draw() override {
-        // ImGui::Image();
+        if (data.size()) {
+        }
+    }
+
+    void copyFromSource() {
+        if (is_data_available.load()) {
+            std::lock_guard<std::mutex> lock(src_mtx);
+            data = src;
+        }
     }
 };
 }  // namespace Widgets

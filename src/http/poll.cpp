@@ -2,14 +2,18 @@
 #include "poll.h"
 
 #include <drogon/HttpAppFramework.h>
+#include <drogon/HttpRequest.h>
 #include <drogon/HttpTypes.h>
 #include <json/value.h>
 
+#include <atomic>
 #include <chrono>
 #include <cstdint>
 #include <format>
 #include <iostream>
 #include <mutex>
+#include <print>
+#include <string>
 #include <string_view>
 #include <thread>
 #include <utility>
@@ -111,15 +115,36 @@ Poll::getButtonCallback() {
     };
     return callback;
 }
-std::function<std::string_view(const std::string&)> Poll::getImagePoller() {
-    auto poller = [this](const std::string& _enpoint) {
+std::function<void(const std::string&, std::string&, std::atomic<bool>&)> Poll::getImagePoller() {
+    auto poller = [this](const std::string& _enpoint, std::string& img_buf,
+                         std::atomic<bool>& is_new_data_available) {
         HttpRequestPtr request = HttpRequest::newHttpRequest();
         request->setMethod(drogon::Get);
         request->setPath(_enpoint);
 
         auto [reqRes, resPtr] = client->sendRequest(request);
-        return resPtr->getBody();
+        img_buf = resPtr->getBody();
+        is_new_data_available.store(true);
     };
     return poller;
 }
+void Poll::pollImage(const std::string& _endpoint, std::string& img_buf,
+                     std::atomic<bool>& is_new_data_available) {
+    HttpRequestPtr img_request = HttpRequest::newHttpRequest();
+    request->setMethod(drogon::HttpMethod::Get);
+    request->setPath(_endpoint);
+
+    client->sendRequest(request, [&is_new_data_available, &img_buf](drogon::ReqResult reqRes, const drogon::HttpResponsePtr& resPtr){
+        if (reqRes == drogon::ReqResult::Ok) {
+            img_buf = resPtr->getBody();
+            is_new_data_available.store(true);
+        }
+        else{
+            std::println("Image request failed");
+        }
+    });
+
+}
+
+
 }  // namespace HttpPoll

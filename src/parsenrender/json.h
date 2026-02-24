@@ -43,6 +43,7 @@ public:
     void addPlot(const std::string& _label, float data, Widgets::Plot<float>::type ptype = Widgets::Plot<float>::type::Line);
     void addBarPlot(const std::string& _label, const std::vector<double>& data, const std::vector<std::string>& format_labels);
     void addButton(const std::string& _label, const std::string& endpoint, drogon::HttpMethod method);
+    void addImage(const std::string& _label, const std::string& endpoint);
     void renderHeader();
     void parseJSON();
     void initFRs();
