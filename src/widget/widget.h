@@ -1,4 +1,5 @@
 #pragma once
+#include <GL/gl.h>
 #include <drogon/HttpTypes.h>
 
 #include <array>
@@ -294,20 +295,29 @@ public:
     std::string endpoint;
     const std::string& src;
     std::mutex& src_mtx;
+    std::expected<GLuint, std::string> texture;
+    ImVec2 img_size;
 
     Image(std::string_view _label, const std::string& _src, std::mutex& _src_mtx,
           const std::string& _endpoint)
         : Widget(_label), endpoint(_endpoint), src(_src), src_mtx(_src_mtx) {}
 
     void draw() override {
-        if (data.size()) {
+        if (data.size() && texture) [[likely]] {
+            if (texture) [[likely]] {
+                ImGui::Image(texture.value(), img_size);
+            }
         }
     }
 
     void copyFromSource() {
         if (is_data_available.load()) {
-            std::lock_guard<std::mutex> lock(src_mtx);
-            data = src;
+            {
+                std::lock_guard<std::mutex> lock(src_mtx);
+                data = src;
+                is_data_available.store(false);
+            }
+            texture = Utils::Image::genTextureFromImageBuffer(data, img_size);
         }
     }
 };

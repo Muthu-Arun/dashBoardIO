@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "imgui.h"
 namespace Utils {
 namespace Log {
 template <typename t>
@@ -21,7 +22,7 @@ void logVec(const std::vector<t>& vec) {
 }
 }  // namespace Log
 namespace Image {
-inline std::expected<GLuint, std::string> genTextureFromImageBuffer(std::string& img_buf) {
+inline std::expected<GLuint, std::string> genTextureFromImageBuffer(std::string& img_buf, ImVec2& img_size) {
     int w, h, channels;
     unsigned char* img = stbi_load_from_memory(reinterpret_cast<stbi_uc*>(img_buf.data()),
                                                img_buf.size(), &w, &h, &channels, 4);
@@ -29,6 +30,8 @@ inline std::expected<GLuint, std::string> genTextureFromImageBuffer(std::string&
     if (!img) {
         return std::unexpected(std::string("error Loading image from memory"));
     }
+    img_size.x = w;
+    img_size.y = h;
 
     GLuint image_texture;
     glGenTextures(1, &image_texture);
