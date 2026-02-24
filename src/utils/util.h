@@ -21,8 +21,7 @@ void logVec(const std::vector<t>& vec) {
 }
 }  // namespace Log
 namespace Image {
-inline std::expected<GLuint, std::string> genTextureFromImageBuffer(
-    std::string& img_buf) {
+inline std::expected<GLuint, std::string> genTextureFromImageBuffer(std::string& img_buf) {
     int w, h, channels;
     unsigned char* img = stbi_load_from_memory(reinterpret_cast<stbi_uc*>(img_buf.data()),
                                                img_buf.size(), &w, &h, &channels, 4);
@@ -44,8 +43,7 @@ inline std::expected<GLuint, std::string> genTextureFromImageBuffer(
 #if defined(GL_UNPACK_ROW_LENGTH) && !defined(__EMSCRIPTEN__)
     glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 #endif
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                 img);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, img);
     stbi_image_free(img);
     return image_texture;
 }

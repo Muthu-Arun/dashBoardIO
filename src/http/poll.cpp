@@ -98,7 +98,6 @@ Poll::getButtonCallback() {
         std::cerr << "Path before request =>";
         std::cerr << path << '\n';
         */
-        HttpClientPtr client = HttpClient::newHttpClient(remote_url, port);
         HttpRequestPtr request = HttpRequest::newHttpRequest();
         request->setMethod(_method);
         request->setPath(_endpoint);
@@ -111,5 +110,16 @@ Poll::getButtonCallback() {
         }
     };
     return callback;
+}
+std::function<std::string_view(const std::string&)> Poll::getImagePoller() {
+    auto poller = [this](const std::string& _enpoint) {
+        HttpRequestPtr request = HttpRequest::newHttpRequest();
+        request->setMethod(drogon::Get);
+        request->setPath(_enpoint);
+
+        auto [reqRes, resPtr] = client->sendRequest(request);
+        return resPtr->getBody();
+    };
+    return poller;
 }
 }  // namespace HttpPoll
