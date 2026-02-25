@@ -1,5 +1,6 @@
+#pragma once
+#include "stb_image.h"
 #include <GL/gl.h>
-#include <stb_image.h>
 
 #include <cstddef>
 #include <expected>

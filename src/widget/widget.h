@@ -303,6 +303,7 @@ public:
         : Widget(_label), endpoint(_endpoint), src(_src), src_mtx(_src_mtx) {}
 
     void draw() override {
+        copyFromSource();
         if (data.size() && texture) [[likely]] {
             if (texture) [[likely]] {
                 ImGui::Image(texture.value(), img_size);

@@ -131,10 +131,10 @@ std::function<void(const std::string&, std::string&, std::atomic<bool>&)> Poll::
 void Poll::pollImage(const std::string& _endpoint, std::string& img_buf,
                      std::atomic<bool>& is_new_data_available) {
     HttpRequestPtr img_request = HttpRequest::newHttpRequest();
-    request->setMethod(drogon::HttpMethod::Get);
-    request->setPath(_endpoint);
+    img_request->setMethod(drogon::HttpMethod::Get);
+    img_request->setPath(_endpoint);
 
-    client->sendRequest(request, [&is_new_data_available, &img_buf](drogon::ReqResult reqRes, const drogon::HttpResponsePtr& resPtr){
+    client->sendRequest(img_request, [&is_new_data_available, &img_buf](drogon::ReqResult reqRes, const drogon::HttpResponsePtr& resPtr){
         if (reqRes == drogon::ReqResult::Ok) {
             img_buf = resPtr->getBody();
             is_new_data_available.store(true);

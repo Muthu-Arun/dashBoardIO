@@ -35,8 +35,10 @@ set(WINDOW_SOURCES
     src/window/window.cpp)
 set(PARSING_SOURCES
     src/parsenrender/json.cpp)
+set(UTIL_SOURCES
+    src/utils/util.cpp)
 # 3. Create the Executable
-add_executable(app src/main.cpp ${IMGUI_SOURCES} ${HTTP_SOURCES} ${WIDGET_SOURCES} ${WINDOW_SOURCES} ${PARSING_SOURCES} ${IM_PLOT_SOURCES})
+add_executable(app src/main.cpp ${IMGUI_SOURCES} ${HTTP_SOURCES} ${WIDGET_SOURCES} ${WINDOW_SOURCES} ${PARSING_SOURCES} ${IM_PLOT_SOURCES} ${UTIL_SOURCES})
 
 # 4. Include Directories
 # Allow includes like <imgui.h> and <backends/imgui_impl_glfw.h>
