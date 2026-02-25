@@ -318,6 +318,9 @@ public:
                 data = src;
                 is_data_available.store(false);
             }
+            if (texture.has_value()) {
+                glDeleteTextures(1, &texture.value());
+            }
             texture = Utils::Image::genTextureFromImageBuffer(data, img_size);
         }
     }
