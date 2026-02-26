@@ -24,7 +24,7 @@ int main(int, char**) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
     // Create window with graphics context
-    GLFWwindow* window = glfwCreateWindow(1280, 720, "dashBoardIO", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(1280, 720, "Sentinel", NULL, NULL);
     if (window == NULL)
         return 1;
     glfwMakeContextCurrent(window);
@@ -53,7 +53,7 @@ int main(int, char**) {
     Widgets::g_FontBold = io.Fonts->AddFontFromFileTTF("fonts/Roboto-Bold.ttf", 20.0f, &config);
 
     Widgets::g_FontRegular = io.Fonts->AddFontFromFileTTF("fonts/Roboto-Regular.ttf", 16.0f, &config);
-
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     // Build the font atlas (your backend usually does this automatically,
     // but if you are doing custom engine integration, call this)
     // io.Fonts->Build();

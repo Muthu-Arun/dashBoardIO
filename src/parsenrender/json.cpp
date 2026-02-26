@@ -104,14 +104,16 @@ void HttpWindowWrapper::addBarPlot(const std::string& _label, const std::vector<
 
 void HttpWindowWrapper::addButton(const std::string& _label, const std::string& endpoint,
                                   drogon::HttpMethod method) {
-    window->addWidget(_label,
-                      std::make_unique<Widgets::Button<>>(_label, endpoint, method, poll->getButtonCallback()));
+    window->addWidget(_label, std::make_unique<Widgets::Button<>>(_label, endpoint, method,
+                                                                  poll->getButtonCallback()));
 }
 
-void HttpWindowWrapper::addImage(const std::string& _label, const std::string& endpoint){
+void HttpWindowWrapper::addImage(const std::string& _label, const std::string& endpoint) {
     map_string[_label];
     network_buffer_mtx[_label];
-    window->addWidget(_label, std::make_unique<Widgets::Image<std::string>>(_label, map_string[_label], network_buffer_mtx[_label], endpoint));
+    window->addWidget(_label,
+                      std::make_unique<Widgets::Image<std::string>>(
+                          _label, map_string[_label], network_buffer_mtx[_label], endpoint));
     poll->pollImage(endpoint, map_string[_label], window->widgets.at(_label)->is_data_available);
 }
 /*
@@ -196,24 +198,27 @@ void HttpWindowWrapper::initFRs() {
             addBarPlot(label_, data_vec, data_label_vec);
         }
     };
-    widget_updates_fr["button"] = [this](const std::string& label_, const Json::Value& params){
+    widget_updates_fr["button"] = [this](const std::string& label_, const Json::Value& params) {
         if (params.isMember("method") && params.isMember("endpoint")) {
             if (window->isWidgetPresent(label_)) {
                 // Do nothing for now, a button does not need an updation
-            }
-            else {
-                std::string endpoint = params["endpoint"].asString(), method = params["method"].asString(); // For now assuming all methods are in Upper Case
-                addButton(label_, endpoint, drogon::HttpMethod::Get); // Just to test for now NEED TO CHANGE
+            } else {
+                std::string endpoint = params["endpoint"].asString(),
+                            method =
+                                params["method"]
+                                    .asString();  // For now assuming all methods are in Upper Case
+                addButton(label_, endpoint,
+                          drogon::HttpMethod::Get);  // Just to test for now NEED TO CHANGE
             }
         }
     };
-    widget_updates_fr["image"] = [this](const std::string& label_, const Json::Value& params){
-        if(params.isMember("endpoint")){
-            if(window->isWidgetPresent(label_)){
+    widget_updates_fr["image"] = [this](const std::string& label_, const Json::Value& params) {
+        if (params.isMember("endpoint")) {
+            if (window->isWidgetPresent(label_)) {
                 std::string endpoint = params["endpoint"].asString();
-                poll->pollImage(endpoint, map_string[label_], window->widgets.at(label_)->is_data_available);
-            }
-            else{
+                poll->pollImage(endpoint, map_string[label_],
+                                window->widgets.at(label_)->is_data_available);
+            } else {
                 std::string endpoint = params["endpoint"].asString();
                 addImage(label_, endpoint);
             }
@@ -240,6 +245,10 @@ void HttpWindowWrapper::renderHeader() {
             ImGui::End();
             return;
         }
+    }
+    if (!poll) {
+        ImGui::End();
+        return;
     }
     if (poll->is_data_available()) {
         parseJSON();
