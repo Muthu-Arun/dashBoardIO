@@ -47,6 +47,9 @@ Sentinel follows a strict separation of concerns:
 sudo apt update
 sudo apt install libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev
 
+#install C++23 deps
+sudo apt install libstdc++-14-dev clang-20
+
 #install drogon
 git clone https://github.com/drogonframework/drogon.git
 sudo apt install libjsoncpp-dev uuid-dev zlib1g-dev libssl-dev
@@ -57,7 +60,9 @@ git clone https://github.com/Muthu-Arun/Sentinel.git
 cd Sentinel
 
 # Create build directory
-mkdir build && cd build
+mkdir build 
+cmake -DCMAKE_C_COMPILER=clang-20 -DCMAKE_CXX_COMPILER=clang++-20 -B ./build
+cmake --build ./build
 
 # Configure with CMake
 cmake ..
