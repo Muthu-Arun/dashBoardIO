@@ -1,6 +1,6 @@
 # Sentinel
 
-![Language](https://img.shields.io/badge/language-C%2B%2B20-blue.svg)
+![Language](https://img.shields.io/badge/language-C%2B%2B23-blue.svg)
 ![UI](https://img.shields.io/badge/UI-Dear%20ImGui-orange.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
@@ -35,7 +35,7 @@ Sentinel follows a strict separation of concerns:
 
 ### Prerequisites
 * **NOTE:** The project is in a pre MVP stage, only tested in ubuntu and ubuntu based distros
-* C++20 compatible compiler (GCC/Clang/MSVC)
+* C++23 compatible compiler (GCC/Clang/MSVC)
 * CMake (3.10+) with Make or Ninja
 * OpenGL / GLFW dependencies
 * Drogon Installed
@@ -43,6 +43,15 @@ Sentinel follows a strict separation of concerns:
 ### Building from Source
 
 ```bash
+# install opengl and glfw deps
+sudo apt update
+sudo apt install libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev
+
+#install drogon
+git clone https://github.com/drogonframework/drogon.git
+sudo apt install libjsoncpp-dev uuid-dev zlib1g-dev libssl-dev
+
+cd drogon && sudo ./build.sh && cd ..
 # Clone the repository
 git clone https://github.com/Muthu-Arun/Sentinel.git
 cd Sentinel
