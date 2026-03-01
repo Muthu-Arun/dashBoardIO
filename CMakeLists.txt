@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.10)
-project(MyImGuiApp)
+cmake_minimum_required(VERSION 3.20)
+project(Sentinel)
 
 set(CMAKE_CXX_STANDARD 23)
 # add_compile_options(-Wall -Wextra -Wpedantic -Werror)
@@ -38,11 +38,11 @@ set(PARSING_SOURCES
 set(UTIL_SOURCES
     src/utils/util.cpp)
 # 3. Create the Executable
-add_executable(app src/main.cpp ${IMGUI_SOURCES} ${HTTP_SOURCES} ${WIDGET_SOURCES} ${WINDOW_SOURCES} ${PARSING_SOURCES} ${IM_PLOT_SOURCES} ${UTIL_SOURCES})
+add_executable(sentinel src/main.cpp ${IMGUI_SOURCES} ${HTTP_SOURCES} ${WIDGET_SOURCES} ${WINDOW_SOURCES} ${PARSING_SOURCES} ${IM_PLOT_SOURCES} ${UTIL_SOURCES})
 
 # 4. Include Directories
 # Allow includes like <imgui.h> and <backends/imgui_impl_glfw.h>
-target_include_directories(app PUBLIC 
+target_include_directories(sentinel PUBLIC 
     ${IMGUI_DIR} 
     ${IMGUI_DIR}/backends
     ${SRC_DIR}/http
@@ -56,4 +56,4 @@ target_include_directories(app PUBLIC
 )
 
 # 5. Link Libraries
-target_link_libraries(app PRIVATE glfw OpenGL::GL Drogon::Drogon pthread)
+target_link_libraries(sentinel PRIVATE glfw OpenGL::GL Drogon::Drogon pthread)

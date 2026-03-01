@@ -63,9 +63,3 @@ cd Sentinel
 mkdir build 
 cmake -DCMAKE_C_COMPILER=clang-20 -DCMAKE_CXX_COMPILER=clang++-20 -B ./build
 cmake --build ./build
-
-# Configure with CMake
-cmake ..
-
-# Build
-cmake --build .
