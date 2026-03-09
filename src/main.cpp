@@ -92,6 +92,7 @@ int main(int, char**) {
 
         glfwSwapBuffers(window);
     }
+    MainWindow::clean();
 
     // Cleanup
     Widgets::cleanup();

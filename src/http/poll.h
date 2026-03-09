@@ -5,11 +5,13 @@
 #include <trantor/net/EventLoop.h>
 
 #include <atomic>
+#include <chrono>
 #include <cstdint>
 #include <functional>
 #include <memory>
 #include <mutex>
 #include <queue>
+#include <ratio>
 #include <string_view>
 #include <thread>
 #include <variant>
@@ -41,6 +43,8 @@ protected:
     std::string endpoint;
     uint64_t port;
     HttpRequestPtr request;
+    double timeout = 3;
+    std::chrono::milliseconds poll_interval = std::chrono::milliseconds(2000);
 
 public:
     Poll(std::string_view remote_url, std::string_view endpoint, uint16_t port = 80);

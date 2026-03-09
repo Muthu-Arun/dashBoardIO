@@ -72,7 +72,7 @@ Poll::Poll(std::string_view remote_url, std::string_view endpoint, uint16_t port
     client = HttpClient::newHttpClient(this->remote_url, port);
     request = HttpRequest::newHttpRequest();
     request->setPath(this->endpoint);
-    timer_id = drogon::app().getLoop()->runEvery(std::chrono::milliseconds(100), [this]() {
+    timer_id = drogon::app().getLoop()->runEvery(poll_interval, [this]() {
         client->sendRequest(request,
                             [this](drogon::ReqResult result, const HttpResponsePtr& response) {
                                 if (result != drogon::ReqResult::Ok) {
@@ -83,7 +83,7 @@ Poll::Poll(std::string_view remote_url, std::string_view endpoint, uint16_t port
                                 // response_body.emplace<std::string>(response->body());
                                 json_ptr = response->getJsonObject();
                                 is_new_data_available.store(true);
-                            });
+                            }, timeout);
     });
 }
 Poll::~Poll() {
